@@ -9,14 +9,15 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
   backend-nodejs:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     links:
       - db-mysql
-    depends_on:
-      - db-mysql
-
+    volumes:
+      - .:/home/app
 volumes:
   mysql-data:
 

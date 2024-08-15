@@ -10,6 +10,8 @@ app.get('/', function (req, res) {
   res.send('Hello World')
 })
 
+
+
 // Endpoint para mostrar información de animales
 app.get('/animales', async (req, res) => {
   try {
