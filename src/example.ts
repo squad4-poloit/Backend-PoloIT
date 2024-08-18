@@ -1,5 +1,5 @@
 import express from "express"
-import { connection  } from "./db.js";
+import { connection  } from "./models/mysql2"
 const app = express()
 const PORT = 3000;
 
