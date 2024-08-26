@@ -1,4 +1,3 @@
 import { prisma } from "../db";
 
-export const UserModel = prisma.user
-
+export const UserModel = prisma.user;
