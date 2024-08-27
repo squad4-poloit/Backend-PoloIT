@@ -3,26 +3,26 @@ generator client {
 }
 
 datasource db {
-  // provider = "sqlite"
-  provider = "mysql"
+  provider = "sqlite"
+  // provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  Admin
-  Gestor
-  Egresado
-  Mentor
-  User
-}
+// enum Role {
+//   Admin
+//   Gestor
+//   Egresado
+//   Mentor
+//   User
+// }
 
 model User {
-  // id        String      @id @default(uuid()) // uuid Mysql
-  id         Int      @id @default(autoincrement()) //id Sqllite
+  id         String   @id @default(uuid()) // uuid Mysql
+  //id         Int      @id @default(autoincrement()) //id Sqllite
   email      String   @unique
   first_name String
   last_name  String
-  role       Role     @default(User)
+  role       String   @default(dbgenerated("User"))
   create_at  DateTime @default(now())
   update_at  DateTime @updatedAt
 }
