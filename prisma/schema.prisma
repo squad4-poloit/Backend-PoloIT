@@ -3,34 +3,53 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  // provider = "mysql"
+  // provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// enum Role {
-//   Admin
-//   Gestor
-//   Egresado
-//   Mentor
-//   User
-// }
+enum Role {
+  Admin
+  Gestor
+  Egresado
+  Mentor
+  User
+}
 
 model User {
-  id         String   @id @default(uuid()) // uuid Mysql
-  //id         Int      @id @default(autoincrement()) //id Sqllite
-  email      String   @unique
-  first_name String
-  last_name  String
-  role       String   @default(dbgenerated("User"))
-  create_at  DateTime @default(now())
-  update_at  DateTime @updatedAt
+  // id         String   @id @default(uuid()) //? UUID generado a nivel prisma ORM
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // UUID generado a nivel base de datos
+  email              String     @unique
+  dni                String     @unique @db.VarChar(8)
+  first_name         String     @db.VarChar(50)
+  last_name          String     @db.VarChar(50)
+  phone_number       String     @unique @db.VarChar(20)
+  role               Role       @default(User)
+  create_at          DateTime   @default(now())
+  update_at          DateTime   @updatedAt
+  assigned_mentoring Int?
+  mentoring          Mentoring? @relation(fields: [assigned_mentoring], references: [id])
 }
 
 model Mentoring {
-  id          Int    @id @default(autoincrement())
-  name        String
-  description String
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String
+  technologies String
+  start_date   DateTime
+  end_date     DateTime
+  create_at    DateTime @default(now())
+  update_at    DateTime @updatedAt
+  users        User[]
+}
+
+//Todo: agregar Meetings en Mentoring
+model Meetings {
+  id        Int      @id @default(autoincrement())
+  url       String
+  messages  Json
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
 }
 
 model ONG {
