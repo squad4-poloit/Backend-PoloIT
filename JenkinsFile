@@ -1,20 +1,37 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'myapp'
+        DOCKER_REGISTRY = 'mydockerhubusername'
+        DOCKER_TAG = "${env.BRANCH_NAME}-${env.BUILD_ID}"
+    }
     stages {
-        stage ("build") {
+        stage('Checkout') {
+            steps {
+                // Clonar el repositorio desde GitHub
+                checkout scm
+            }
+        }
+        stage("Test") {
             steps {
                 
             }
         }
-        stage ("test") {
+        stage('Build') {
             steps {
                 
             }
         }
-        stage ("build") {
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
             steps {
-                
+                script {
+                    // Desplegar en el entorno de producción
+                    docker.compose('-f docker-compose.yml -f docker-compose.prod.yml up -d')
+                }
             }
         }
     }
