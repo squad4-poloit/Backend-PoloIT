@@ -8,39 +8,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  Admin
-  Gestor
-  Egresado
-  Mentor
-  User
+model Permission {
+  id    Int    @id @default(autoincrement())
+  name  String @unique @db.VarChar(50)
+  roles Role[]
+
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique @db.VarChar(50)
+  users       User[]
+  permissions Permission[]
+
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
 }
 
 model User {
   // id         String   @id @default(uuid()) //? UUID generado a nivel prisma ORM
-  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // UUID generado a nivel base de datos
-  email              String     @unique
-  dni                String     @unique @db.VarChar(8)
-  first_name         String     @db.VarChar(50)
-  last_name          String     @db.VarChar(50)
-  phone_number       String     @unique @db.VarChar(20)
-  role               Role       @default(User)
-  create_at          DateTime   @default(now())
-  update_at          DateTime   @updatedAt
-  assigned_mentoring Int?
-  mentoring          Mentoring? @relation(fields: [assigned_mentoring], references: [id])
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // UUID generado a nivel base de datos
+  email        String            @unique
+  dni          String            @unique @db.VarChar(8)
+  first_name   String            @db.VarChar(50)
+  last_name    String            @db.VarChar(50)
+  phone_number String            @unique @db.VarChar(20)
+  roleId       Int
+  role         Role              @relation(fields: [roleId], references: [id])
+  create_at    DateTime          @default(now())
+  update_at    DateTime          @updatedAt
+  mentoring    UserOnMentoring[]
 }
 
 model Mentoring {
-  id           Int      @id @default(autoincrement())
+  id           Int               @id @default(autoincrement())
   title        String
   description  String
   technologies String
   start_date   DateTime
   end_date     DateTime
-  create_at    DateTime @default(now())
-  update_at    DateTime @updatedAt
-  users        User[]
+  create_at    DateTime          @default(now())
+  update_at    DateTime          @updatedAt
+  users        UserOnMentoring[]
+}
+
+model UserOnMentoring {
+  id          Int       @id @default(autoincrement())
+  userId      String
+  user        User      @relation(fields: [userId], references: [dni])
+  mentoringId Int
+  mentoring   Mentoring @relation(fields: [mentoringId], references: [id])
+
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
 }
 
 //Todo: agregar Meetings en Mentoring
