@@ -1,3 +1,7 @@
+build
+.vscode
+migrations
+dev.db
 # Logs
 logs
 *.log

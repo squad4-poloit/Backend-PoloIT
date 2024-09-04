@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  backend:
+    command: sh -c "npm run install && npm run check && npm run test"
+    depends_on:
+    - db
+
+  database:
+    environment:
+      - POSTGRES_DB=dbPoloIT

@@ -1,25 +1,30 @@
 version: "3.9"
 services:
-  db-mysql:
-    image: mysql
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-    volumes:
-      - mysql-data:/var/lib/mysql
-  backend-nodejs:
+  backend:
     build: .
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=password
+      - DATABASE_NAME=dbPoloIT
     ports:
-      - "3000:3000"
-    links:
-      - db-mysql
+      - "3652:3000"
     depends_on:
-      - db-mysql
+      - db
+    
+
+  database:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=dbPoloIT
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5236:5432"
 
 volumes:
-  mysql-data:
-
-
-
-    
+  pgdata:
