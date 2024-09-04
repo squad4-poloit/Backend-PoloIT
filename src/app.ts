@@ -7,5 +7,8 @@ app.use(express.json());
 
 app.use("/api", userRoutes);
 
+app.get("/", (_req, res) => {
+	res.send("Hello World!");
+});
 
 export default app;

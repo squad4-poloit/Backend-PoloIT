@@ -2,7 +2,6 @@ version: "3.9"
 services:
   backend:
     build: .
-    restart: always
     environment:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
@@ -10,12 +9,12 @@ services:
       - DATABASE_PASSWORD=password
       - DATABASE_NAME=dbPoloIT
     ports:
-      - "1234:3000"
+      - "3652:3000"
     depends_on:
       - db
     
 
-  db:
+  database:
     image: postgres:16-alpine
     restart: always
     environment:
@@ -25,7 +24,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5236:5432"
 
 volumes:
   pgdata:
