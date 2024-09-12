@@ -1,7 +1,7 @@
 build
 .vscode
 migrations
-dev.db
+*.db
 # Logs
 logs
 *.log

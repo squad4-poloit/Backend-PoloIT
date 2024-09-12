@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Permission {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  roles Role[]
+
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
+}
+
+// "Admin", "Gestor", "Estudiante", "Mentor"
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  users       User[]
+  permissions Permission[]
+
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
+}
+
+model User {
+  id         String             @id @default(uuid()) //? UUID generado a nivel prisma ORM
+  email      String             @unique
+  dni        String             @unique
+  first_name String
+  last_name  String
+  phone      String
+  roleId     Int
+  role       Role               @relation(fields: [roleId], references: [id])
+  create_at  DateTime           @default(now())
+  update_at  DateTime           @updatedAt
+  mentorship UserOnMentorship[]
+}
+
+model Mentorship {
+  id           Int                @id @default(autoincrement())
+  title        String
+  description  String
+  technologies String
+  start_date   DateTime
+  end_date     DateTime
+  create_at    DateTime           @default(now())
+  update_at    DateTime           @updatedAt
+  users        UserOnMentorship[]
+}
+
+model UserOnMentorship {
+  id           Int        @id @default(autoincrement())
+  userId       String
+  user         User       @relation(fields: [userId], references: [dni])
+  mentorshipId Int
+  mentorship   Mentorship @relation(fields: [mentorshipId], references: [id])
+
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
+}
+
+model Meetings {
+  id        Int      @id @default(autoincrement())
+  url       String
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
+}
