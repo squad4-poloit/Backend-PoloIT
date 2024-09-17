@@ -31,16 +31,34 @@ cd Backend-PoloIT
 npm install
 ```
 
-#### 3.  Iniciar Base de Datos
+#### 4. Preparar Variables de entorno
+
+- Los script npm están preparados para cargar las variables de entorno definidas en archivos `.env` para cada ambiente
+  - `.env` para producción
+  - `.env.dev` para desarrollo
+  - `.env.local` para desarrollo local
+  - `.env.test` para testing
+
+- Crear y definir variables de entorno por ambiente
+  Ejemplo de variables de entorno:
+
+    ```.env
+    DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"  #dev, prod, test
+    DATABASE_URL="file:./local.db" #local, test
+    PORT="5454"
+    NODE_ENV="example"
+    ```
+
+#### 4.  Iniciar Base de Datos
 
 ```bash
 npm run prisma-migrate:local
 ```
 
-#### 4. Ejecutar Proyecto
+#### 5. Ejecutar Proyecto
 
 ```bash
-npm run dev:local
+npm run local
 ```
 
 ## Ejecutando las pruebas ⚙️
@@ -51,7 +69,7 @@ npm run test:local
 
 ## Despliegue 📦
 
-Definir
+`In Progress`
 
 ## Construido con 🛠️
 
@@ -64,8 +82,8 @@ Definir
 - [Swagger](https://swagger.io/) - Design and document APIs
 - [Biome](https://biomejs.dev/) - Format, lint, and more
 - [Jest](https://jestjs.io/) - Testing Framework
-- [Docker](https://www.docker.com/) - container tool
-- [Jenkins](https://www.jenkins.io/) - servidor de automatización
+- [Docker](https://www.docker.com/) - Container tool
+- [Jenkins](https://www.jenkins.io/) - Servidor de automatización
 
 ## Estructura  de carpetas 🧱
 
@@ -79,8 +97,8 @@ Definir
 
 - [x] Implementar multiples entornos [prod, dev, dev:local, test]
 - [ ] Documentar en el Readme como ejecutar el proyecto
+- [ ] Configurar Typescript Path Aliases
 - [ ] Documentar la estructura del proyecto
 - [ ] Documentar Apis con Swagger
 - [ ] Implementar validaciones en controladores con Zod
 - [ ] Crear un diagrama de la base de datos
-- [ ] Configurar Typescript Path Aliases

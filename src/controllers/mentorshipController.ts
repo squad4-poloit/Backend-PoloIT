@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { prisma } from "../db";
+import  prisma  from "../../prisma/client";
 
 const getAllMentorships = async (_req: Request, res: Response) => {
 	try {
