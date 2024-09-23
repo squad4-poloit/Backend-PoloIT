@@ -2,72 +2,94 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Permission {
-  id    Int    @id @default(autoincrement())
-  name  String @unique @db.VarChar(50)
-  roles Role[]
-
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(50)
   create_at DateTime @default(now())
   update_at DateTime @updatedAt
+
+  roles Role[]
 }
 
 // "Admin", "Gestor", "Estudiante", "Mentor"
 model Role {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique @db.VarChar(50)
-  users       User[]
-  permissions Permission[]
-
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(50)
   create_at DateTime @default(now())
   update_at DateTime @updatedAt
+
+  users       User[]
+  permissions Permission[]
 }
 
 model User {
-  id         String             @id @default(uuid()) //? UUID generado a nivel prisma ORM
-  // id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // UUID generado a nivel base de datos
-  email      String             @unique
-  dni        String             @unique
-  first_name String             @db.VarChar(50)
-  last_name  String             @db.VarChar(50)
-  phone      String             @db.VarChar(20)
-  roleId     Int
-  role       Role               @relation(fields: [roleId], references: [id])
-  create_at  DateTime           @default(now())
-  update_at  DateTime           @updatedAt
-  mentorship UserOnMentorship[]
+  id            String   @id @default(uuid()) //? UUID generado a nivel prisma ORM
+  dni           String   @unique
+  email         String   @unique
+  first_name    String   @db.VarChar(50)
+  last_name     String   @db.VarChar(50)
+  password      String
+  phone         String   @db.VarChar(20)
+  birth_date    DateTime
+  skills        String?
+  linkedIn      String?
+  roleId        Int
+  institutionId Int
+  create_at     DateTime @default(now())
+  update_at     DateTime @updatedAt
+
+  role        Role               @relation(fields: [roleId], references: [id])
+  institution Institution        @relation(fields: [institutionId], references: [id])
+  mentorships UserOnMentorship[]
 }
 
 model Mentorship {
-  id           Int                @id @default(autoincrement())
-  title        String
-  description  String
-  technologies String
-  start_date   DateTime
-  end_date     DateTime
-  create_at    DateTime           @default(now())
-  update_at    DateTime           @updatedAt
-  users        UserOnMentorship[]
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  student_slots Int
+  tags          String
+  start_date    DateTime
+  end_date      DateTime
+  create_at     DateTime @default(now())
+  update_at     DateTime @updatedAt
+
+  users UserOnMentorship[]
 }
 
 model UserOnMentorship {
-  id           Int        @id @default(autoincrement())
-  userId       String
-  user         User       @relation(fields: [userId], references: [dni])
-  mentorshipId Int
-  mentorship   Mentorship @relation(fields: [mentorshipId], references: [id])
+  id              Int      @id @default(autoincrement())
+  userId          String
+  mentorshipId    Int
+  role            String
+  student_grade   Int?
+  mentor_comments String?
+  create_at       DateTime @default(now())
+  update_at       DateTime @updatedAt
 
-  create_at DateTime @default(now())
-  update_at DateTime @updatedAt
+  user       User       @relation(fields: [userId], references: [dni])
+  mentorship Mentorship @relation(fields: [mentorshipId], references: [id])
 }
 
-model Meetings {
-  id        Int      @id @default(autoincrement())
-  url       String
-  create_at DateTime @default(now())
-  update_at DateTime @updatedAt
+model Institution {
+  id   Int             @id @default(autoincrement())
+  name String
+  type TypeInstitution @default(POLO_IT)
+
+  User User[]
+}
+
+enum TypeInstitution {
+  POLO_IT
+  ONG
+  EMPRESA
 }

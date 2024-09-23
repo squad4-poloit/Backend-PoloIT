@@ -1,0 +1,92 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Permission {
+  id Int [pk, increment]
+  name String [unique, not null]
+  create_at DateTime [default: `now()`, not null]
+  update_at DateTime [not null]
+  roles Role [not null]
+}
+
+Table Role {
+  id Int [pk, increment]
+  name String [unique, not null]
+  create_at DateTime [default: `now()`, not null]
+  update_at DateTime [not null]
+  users User [not null]
+  permissions Permission [not null]
+}
+
+Table User {
+  id String [pk]
+  dni String [unique, not null]
+  email String [unique, not null]
+  first_name String [not null]
+  last_name String [not null]
+  password String [not null]
+  phone String [not null]
+  birth_date DateTime [not null]
+  skills String
+  linkedIn String
+  roleId Int [not null]
+  institutionId Int [not null]
+  create_at DateTime [default: `now()`, not null]
+  update_at DateTime [not null]
+  role Role [not null]
+  institution Institution [not null]
+  mentorships UserOnMentorship [not null]
+}
+
+Table Mentorship {
+  id Int [pk, increment]
+  title String [not null]
+  description String [not null]
+  student_slots Int [not null]
+  tags String [not null]
+  start_date DateTime [not null]
+  end_date DateTime [not null]
+  create_at DateTime [default: `now()`, not null]
+  update_at DateTime [not null]
+  users UserOnMentorship [not null]
+}
+
+Table UserOnMentorship {
+  id Int [pk, increment]
+  userId String [not null]
+  mentorshipId Int [not null]
+  role String [not null]
+  student_grade Int
+  mentor_comments String
+  create_at DateTime [default: `now()`, not null]
+  update_at DateTime [not null]
+  user User [not null]
+  mentorship Mentorship [not null]
+}
+
+Table Institution {
+  id Int [pk, increment]
+  name String [not null]
+  type TypeInstitution [not null, default: 'POLO_IT']
+  User User [not null]
+}
+
+Table PermissionToRole {
+  rolesId Int [ref: > Role.id]
+  permissionsId Int [ref: > Permission.id]
+}
+
+Enum TypeInstitution {
+  POLO_IT
+  ONG
+  EMPRESA
+}
+
+Ref: User.roleId > Role.id
+
+Ref: User.institutionId > Institution.id
+
+Ref: UserOnMentorship.userId > User.dni
+
+Ref: UserOnMentorship.mentorshipId > Mentorship.id
