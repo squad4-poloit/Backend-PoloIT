@@ -1,10 +1,12 @@
 import type { Request, Response } from "express";
-import prisma from "@models/client";
+import UserService from "@src/services/usersService";
+import type { User } from "@prisma/client";
 
 const getUsers = async (_req: Request, res: Response) => {
 	try {
-		const list_users = await prisma.user.findMany();
-		res.status(400).json({ status: "400", data: list_users });
+		const list_users = await UserService.paginatedListUsers();
+
+		res.status(200).json({ status: "200", data: list_users });
 	} catch (error) {
 		res.status(404).send("Not Found");
 		console.error(error);
@@ -12,13 +14,10 @@ const getUsers = async (_req: Request, res: Response) => {
 };
 
 const getUser = async (req: Request, res: Response) => {
-	const user_id = req.params.id;
+	const id = req.params.id;
 	try {
-		const user = await prisma.user.findFirst({
-			where: {
-				id: user_id,
-			},
-		});
+		const user = await UserService.getUser(id);
+
 		res.status(400).json({ status: "400", data: user });
 	} catch (error) {
 		res.status(404).json({ status: "404", data: "Not Found" });
@@ -27,18 +26,10 @@ const getUser = async (req: Request, res: Response) => {
 };
 
 const postUser = async (req: Request, res: Response) => {
-	const { email, first_name, last_name, dni, phone, role } = req.body;
+	const userData: User = req.body;
 	try {
-		const newUser = await prisma.user.create({
-			data: {
-				email: email,
-				first_name: first_name,
-				last_name: last_name,
-				dni: dni,
-				phone: phone,
-				roleId: role,
-			},
-		});
+		const newUser = await UserService.createUser(userData);
+
 		res.status(400).json({ status: "400", data: newUser });
 	} catch (error) {
 		res.status(404).json({ status: "404", data: "Not Found" });
@@ -46,15 +37,11 @@ const postUser = async (req: Request, res: Response) => {
 	}
 };
 const updateUser = async (req: Request, res: Response) => {
-	const user_id = req.params.id;
+	const userId = req.params.id;
 	try {
 		const fieldsUpdated = req.body;
-		const updatedUser = await prisma.user.update({
-			where: {
-				id: user_id,
-			},
-			data: fieldsUpdated,
-		});
+		const updatedUser = await UserService.updateUser(userId, fieldsUpdated);
+
 		res.status(400).json({ status: "400", data: updatedUser });
 	} catch (error) {
 		res.status(404).json({ status: "404", data: "Not Found" });
@@ -63,13 +50,10 @@ const updateUser = async (req: Request, res: Response) => {
 };
 
 const deleteUser = async (req: Request, res: Response) => {
-	const user_id = req.params.id;
+	const id = req.params.id;
 	try {
-		const deletedUser = await prisma.user.delete({
-			where: {
-				id: user_id,
-			},
-		});
+		const deletedUser = await UserService.deleteUser(id);
+
 		res.status(400).json({ status: "400", data: deletedUser });
 	} catch (error) {
 		res.status(404).json({ status: "404", data: "Not Found" });
