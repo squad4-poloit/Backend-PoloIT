@@ -7,7 +7,6 @@ Table Permission {
   name String [unique, not null]
   create_at DateTime [default: `now()`, not null]
   update_at DateTime [not null]
-  roles Role [not null]
 }
 
 Table Role {
@@ -15,8 +14,6 @@ Table Role {
   name String [unique, not null]
   create_at DateTime [default: `now()`, not null]
   update_at DateTime [not null]
-  users User [not null]
-  permissions Permission [not null]
 }
 
 Table User {
@@ -26,55 +23,60 @@ Table User {
   first_name String [not null]
   last_name String [not null]
   password String [not null]
-  phone String [not null]
+  phone String
   birth_date DateTime [not null]
-  skills String
   linkedIn String
   roleId Int [not null]
   institutionId Int [not null]
   create_at DateTime [default: `now()`, not null]
   update_at DateTime [not null]
-  role Role [not null]
-  institution Institution [not null]
-  mentorships UserOnMentorship [not null]
 }
 
 Table Mentorship {
   id Int [pk, increment]
   title String [not null]
   description String [not null]
-  student_slots Int [not null]
-  tags String [not null]
+  student_spots Int [not null]
+  status String [not null]
+  tags String
   start_date DateTime [not null]
-  end_date DateTime [not null]
+  end_date DateTime
   create_at DateTime [default: `now()`, not null]
   update_at DateTime [not null]
-  users UserOnMentorship [not null]
 }
 
 Table UserOnMentorship {
   id Int [pk, increment]
   userId String [not null]
   mentorshipId Int [not null]
-  role String [not null]
-  student_grade Int
-  mentor_comments String
+  grade Int
   create_at DateTime [default: `now()`, not null]
   update_at DateTime [not null]
-  user User [not null]
-  mentorship Mentorship [not null]
+
+  indexes {
+    (userId, mentorshipId) [unique]
+  }
 }
 
 Table Institution {
   id Int [pk, increment]
   name String [not null]
   type TypeInstitution [not null, default: 'POLO_IT']
-  User User [not null]
+}
+
+Table Skill {
+  id Int [pk, increment]
+  name String [unique, not null]
 }
 
 Table PermissionToRole {
   rolesId Int [ref: > Role.id]
   permissionsId Int [ref: > Permission.id]
+}
+
+Table SkillToUser {
+  skillsId Int [ref: > Skill.id]
+  usersId String [ref: > User.id]
 }
 
 Enum TypeInstitution {
@@ -87,6 +89,6 @@ Ref: User.roleId > Role.id
 
 Ref: User.institutionId > Institution.id
 
-Ref: UserOnMentorship.userId > User.dni
+Ref: UserOnMentorship.userId > User.id
 
 Ref: UserOnMentorship.mentorshipId > Mentorship.id

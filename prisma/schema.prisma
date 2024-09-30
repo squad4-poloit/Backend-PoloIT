@@ -3,7 +3,8 @@ generator client {
 }
 
 generator dbml {
-  provider = "prisma-dbml-generator"
+  provider              = "prisma-dbml-generator"
+  includeRelationFields = false
 }
 
 datasource db {
@@ -38,9 +39,8 @@ model User {
   first_name    String   @db.VarChar(50)
   last_name     String   @db.VarChar(50)
   password      String
-  phone         String   @db.VarChar(20)
+  phone         String?
   birth_date    DateTime
-  skills        String?
   linkedIn      String?
   roleId        Int
   institutionId Int
@@ -49,35 +49,37 @@ model User {
 
   role        Role               @relation(fields: [roleId], references: [id])
   institution Institution        @relation(fields: [institutionId], references: [id])
+  skills      Skill[]
   mentorships UserOnMentorship[]
 }
 
 model Mentorship {
-  id            Int      @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
   title         String
   description   String
-  student_slots Int
-  tags          String
+  student_spots Int
+  status        String
+  tags          String?
   start_date    DateTime
-  end_date      DateTime
-  create_at     DateTime @default(now())
-  update_at     DateTime @updatedAt
+  end_date      DateTime?
+  create_at     DateTime  @default(now())
+  update_at     DateTime  @updatedAt
 
   users UserOnMentorship[]
 }
 
 model UserOnMentorship {
-  id              Int      @id @default(autoincrement())
-  userId          String
-  mentorshipId    Int
-  role            String
-  student_grade   Int?
-  mentor_comments String?
-  create_at       DateTime @default(now())
-  update_at       DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  userId       String
+  mentorshipId Int
+  grade        Int?
+  create_at    DateTime @default(now())
+  update_at    DateTime @updatedAt
 
-  user       User       @relation(fields: [userId], references: [dni])
+  user       User       @relation(fields: [userId], references: [id])
   mentorship Mentorship @relation(fields: [mentorshipId], references: [id])
+
+  @@unique([userId, mentorshipId])
 }
 
 model Institution {
@@ -86,6 +88,12 @@ model Institution {
   type TypeInstitution @default(POLO_IT)
 
   User User[]
+}
+
+model Skill {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
 }
 
 enum TypeInstitution {
