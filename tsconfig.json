@@ -106,7 +106,7 @@
     "skipLibCheck": true,                               /* Skip type checking all .d.ts files. */
     "paths": {
       "@src/*":["src/*"],
-      "@models/*":["prisma/*"],
+      "@database/*":["prisma/*"],
       "@controllers/*":["src/controllers/*"],
       "@routes/*":["src/routes/*"],
       "@services/*":["src/services/*"],

@@ -1,20 +1,17 @@
 # Backend Sistema de Gestión de inscripciones
 
-Este es el backend un sistema de gestión de inscripciones a proyectos, desarrollado con Nodejs, TypeScript, Express y Mysql
+Este es el backend un sistema de gestión de inscripciones a Mentorias, desarrollado con Nodejs, TypeScript, Express y PostgreSQL
 
 ## Comenzando 🚀
 
 Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas.
 
-Mira **Deployment** para conocer como desplegar el proyecto.
-
 ### Pre-requisitos 📋
 
-- Tener instalado:
-  - [Git](https://git-scm.com/)
-  - Node.js LTS
-    - [Pagina oficial](https://nodejs.org/en)
-    - [Package Manager](https://nodejs.org/en/download/package-manager)
+- [Git](https://git-scm.com/)
+- [Node.js LTS](https://nodejs.org/en)
+- [PostgresSQL 16.4](https://www.postgresql.org/download/)
+  - [Windows](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
 
 ### Instalación 🔧
 
@@ -34,26 +31,29 @@ npm install
 #### 4. Preparar Variables de entorno
 
 - Los script npm están preparados para cargar las variables de entorno definidas en archivos `.env` para cada ambiente
-  - `.env` para producción
-  - `.env.dev` para desarrollo
-  - `.env.local` para desarrollo local
-  - `.env.test` para testing
+  - `.env` -> NODE_ENV=production
+  - `.env.dev` -> NODE_ENV=development
+  - `.env.local` -> NODE_ENV=development
+  - `.env.test` -> NODE_ENV=test
 
-- Crear y definir variables de entorno por ambiente
-  Ejemplo de variables de entorno:
-
-    ```.env
-    DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"  #dev, prod, test
-    DATABASE_URL="file:./local.db" #local, test
-    PORT="5454"
-    NODE_ENV="example"
-    ```
+- Crear y definir variables de entorno
+  - DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+  - DATABASE_LOCAL="file:./local.db"
+  - PORT=3030
+  - NODE_ENV=development
 
 #### 4.  Iniciar Base de Datos
 
 ```bash
-npm run prisma-migrate:local
+npm run prisma-migrate:<ambiente>
 ```
+
+Reemplazar `<ambiente>` por:
+
+- `production` para ejecuta
+- `development`
+- `local`
+- `test`
 
 #### 5. Ejecutar Proyecto
 

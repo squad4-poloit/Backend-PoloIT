@@ -6,12 +6,13 @@
 	"files": {
 		"include": [
 			"src/**/*.ts",
-			"test/**"
+			"test/**",
+			"./prisma/*.ts"
 		],
 		"ignore": [
 			"dist/**",
 			"node_modules/**",
-			"prisma/**"
+			"prisma/*.prisma"
 		]
 	},
 	"linter": {
