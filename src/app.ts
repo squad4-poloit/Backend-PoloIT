@@ -21,3 +21,5 @@ app.listen(PORT, () => {
 	console.log(`
 🚀 Server ${NODE_ENV} ready in at: http://localhost:${PORT}`);
 });
+
+export default app;

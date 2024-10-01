@@ -1,12 +1,33 @@
 import type { Request, Response } from "express";
 import UserService from "@src/services/usersService";
 import type { User } from "@prisma/client";
+import type { GetUserListQueryType } from "@schemas/user.schema";
 
-const getUsers = async (_req: Request, res: Response) => {
+const getUsers = async (
+	req: Request<unknown, unknown, unknown, GetUserListQueryType>,
+	res: Response,
+) => {
 	try {
-		const list_users = await UserService.paginatedListUsers();
+		const { page, limit, role, institution, skill } = req.query;
+		console.log({ role, institution, skill });
 
-		res.status(200).json({ status: "200", data: list_users });
+		const list_users = await UserService.paginatedListUsers(page, limit, {
+			role,
+			institution,
+			skill,
+		});
+
+		const totalUser = await UserService.getTotalUsers();
+		const sendData = {
+			users: list_users,
+			info: {
+				totalUsers: totalUser,
+				page,
+				limit,
+			},
+		};
+
+		res.status(200).json({ status: "200", data: sendData });
 	} catch (error) {
 		res.status(404).send("Not Found");
 		console.error(error);

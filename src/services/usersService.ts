@@ -1,20 +1,30 @@
 import prisma from "@database/client";
 import type { User } from "@prisma/client";
+import type { UserList, UsersFilters } from "@interfaces/user.interfaces";
 
-interface UserListFilters {
-	institutionId?: number;
-	roleId?: number;
-}
+const getTotalUsers = async () => {
+	const total = await prisma.user.count();
+
+	return total;
+};
 
 const paginatedListUsers = async (
-	page = 0,
+	page = 1,
 	limit = 10,
-	filters?: UserListFilters,
-): Promise<User[]> => {
+	filters?: UsersFilters,
+): Promise<UserList[]> => {
 	try {
 		const take = limit;
 		const skip = (page - 1) * limit;
-		const where = filters ? filters : {};
+		let where = {};
+		if (filters) {
+			const { role, institution, skill } = filters;
+			where = {
+				...(role && { role: { name: role } }),
+				...(institution && { institution: { name: institution } }),
+				...(skill && { skills: { some: { name: skill } } }),
+			};
+		}
 
 		const users = await prisma.user.findMany({
 			skip,
@@ -26,20 +36,17 @@ const paginatedListUsers = async (
 				email: true,
 				first_name: true,
 				last_name: true,
-				institutionId: true,
-				roleId: true,
 				birth_date: true,
-				institution: true,
 				linkedIn: true,
 				phone: true,
-				skills: {
-					select: {
-						name: true,
-					},
-				},
+				institutionId: true,
+				roleId: true,
+				role: true,
+				institution: true,
+				skills: true,
+				mentorships: true,
 			},
 		});
-		console.log({ users });
 
 		return users;
 	} catch (error) {
@@ -49,10 +56,6 @@ const paginatedListUsers = async (
 };
 
 const getUser = async (id: string): Promise<User | null> => {
-	if (!id) {
-		throw new Error("Invalid user id"); // Validar si el id es válido antes de realizar la consulta.
-	}
-
 	try {
 		const user = await prisma.user.findUnique({
 			where: {
@@ -96,4 +99,5 @@ export default {
 	createUser,
 	updateUser,
 	deleteUser,
+	getTotalUsers,
 };
