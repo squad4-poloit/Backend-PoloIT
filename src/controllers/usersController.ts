@@ -1,15 +1,15 @@
 import type { Request, Response } from "express";
 import UserService from "@src/services/usersService";
 import type { User } from "@prisma/client";
-import type { GetUserListQueryType } from "@schemas/user.schema";
+import { GetUserSchema, GetUsersSchema } from "@src/schemas/user.schema";
+import { handleError } from "@src/utils/error.handle";
 
-const getUsers = async (
-	req: Request<unknown, unknown, unknown, GetUserListQueryType>,
-	res: Response,
-) => {
+const getUsers = async (req: Request, res: Response) => {
 	try {
-		const { page, limit, role, institution, skill } = req.query;
-		console.log({ role, institution, skill });
+		const { query } = GetUsersSchema.parse({
+			query: req.query,
+		});
+		const { limit, page, institution, role, skill } = query;
 
 		const list_users = await UserService.paginatedListUsers(page, limit, {
 			role,
@@ -29,19 +29,22 @@ const getUsers = async (
 
 		res.status(200).json({ status: "200", data: sendData });
 	} catch (error) {
-		res.status(404).send("Not Found");
-		console.error(error);
+		handleError(res, error);
 	}
 };
 
 const getUser = async (req: Request, res: Response) => {
-	const id = req.params.id;
 	try {
-		const user = await UserService.getUser(id);
+		const { params } = GetUserSchema.parse({
+			params: req.params,
+		});
+		console.log(params);
+
+		const user = await UserService.getUser(params.id);
 
 		res.status(400).json({ status: "400", data: user });
 	} catch (error) {
-		res.status(404).json({ status: "404", data: "Not Found" });
+		handleError(res, error);
 		console.error(error);
 	}
 };

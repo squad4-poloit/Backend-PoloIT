@@ -1,6 +1,6 @@
 import type { User } from "@prisma/client";
 
-export interface UserList
+export interface UserCustom
 	extends Omit<User, "password" | "create_at" | "update_at"> {}
 
 export interface UsersFilters {

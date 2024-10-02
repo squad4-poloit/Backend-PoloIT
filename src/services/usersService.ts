@@ -1,18 +1,40 @@
 import prisma from "@database/client";
 import type { User } from "@prisma/client";
-import type { UserList, UsersFilters } from "@interfaces/user.interfaces";
+import type { UserCustom, UsersFilters } from "@interfaces/user.interfaces";
+
+const selectUser = {
+	id: true,
+	dni: true,
+	email: true,
+	first_name: true,
+	last_name: true,
+	birth_date: true,
+	linkedIn: true,
+	phone: true,
+	institutionId: true,
+	roleId: true,
+	role: true,
+	institution: true,
+	skills: true,
+	mentorships: true,
+};
 
 const getTotalUsers = async () => {
 	const total = await prisma.user.count();
-
 	return total;
+};
+
+const IsUserExist = async (id: string): Promise<boolean> => {
+	const existingUser = await prisma.user.findUnique({ where: { id } });
+	const isExist = !!existingUser;
+	return isExist;
 };
 
 const paginatedListUsers = async (
 	page = 1,
 	limit = 10,
 	filters?: UsersFilters,
-): Promise<UserList[]> => {
+): Promise<UserCustom[]> => {
 	try {
 		const take = limit;
 		const skip = (page - 1) * limit;
@@ -30,22 +52,7 @@ const paginatedListUsers = async (
 			skip,
 			take,
 			where,
-			select: {
-				id: true,
-				dni: true,
-				email: true,
-				first_name: true,
-				last_name: true,
-				birth_date: true,
-				linkedIn: true,
-				phone: true,
-				institutionId: true,
-				roleId: true,
-				role: true,
-				institution: true,
-				skills: true,
-				mentorships: true,
-			},
+			select: selectUser,
 		});
 
 		return users;
@@ -55,12 +62,18 @@ const paginatedListUsers = async (
 	}
 };
 
-const getUser = async (id: string): Promise<User | null> => {
+const getUser = async (id: string) => {
 	try {
+		const okUser = await IsUserExist(id);
+		if (!okUser) {
+			throw new Error("Usuario no encontrado");
+		}
+
 		const user = await prisma.user.findUnique({
 			where: {
 				id,
 			},
+			select: selectUser,
 		});
 		return user;
 	} catch (error) {
@@ -68,29 +81,52 @@ const getUser = async (id: string): Promise<User | null> => {
 		throw new Error("Failed to fetch user");
 	}
 };
-
 const createUser = async (user: User) => {
-	const newUser = await prisma.user.create({
-		data: user,
-	});
-	return newUser;
+	try {
+		const newUser = await prisma.user.create({
+			data: { ...user },
+		});
+		return newUser;
+	} catch (error) {
+		throw new Error("Error creando el usuario");
+	}
 };
 
-const updateUser = async (id: string, fieldsUpdated) => {
-	const updatedUser = await prisma.user.update({
-		where: {
-			id,
-		},
-		data: fieldsUpdated,
-	});
-	return updatedUser;
+const updateUser = async (id: string, fieldsUpdated: Partial<User>) => {
+	try {
+		const okUser = await IsUserExist(id);
+		if (!okUser) {
+			throw new Error("Usuario no encontrado");
+		}
+
+		const updatedUser = await prisma.user.update({
+			where: { id },
+			data: fieldsUpdated,
+		});
+		return updatedUser;
+	} catch (error) {
+		// Manejo de errores
+		throw new Error("Error actualizando el usuario");
+	}
 };
 
-const deleteUser = async (id) => {
-	const deletedUser = await prisma.user.delete({
-		where: { id },
-	});
-	return deletedUser;
+// Eliminación de un usuario
+const deleteUser = async (id: string) => {
+	try {
+		// Validar si el usuario existe antes de intentar eliminar
+		const okUser = await IsUserExist(id);
+		if (!okUser) {
+			throw new Error("Usuario no encontrado");
+		}
+
+		const deletedUser = await prisma.user.delete({
+			where: { id },
+		});
+		return deletedUser;
+	} catch (error) {
+		// Manejo de errores
+		throw new Error("Error eliminando el usuario");
+	}
 };
 
 export default {

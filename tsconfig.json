@@ -25,7 +25,9 @@
       "@routes/*": ["src/routes/*"],
       "@services/*": ["src/services/*"],
       "@schemas/*": ["src/schemas/*"],
-      "@interfaces/*" : ["src/interfaces/*"]
+      "@interfaces/*" : ["src/interfaces/*"],
+      "@middlewares/*" : ["src/middlewares/*"]
+
     }
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
