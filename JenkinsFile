@@ -4,6 +4,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
+                    echo "Hola Mundo!"
                     sh "echo 'Hola Mundo'"
                     sh "ls"
                 }
