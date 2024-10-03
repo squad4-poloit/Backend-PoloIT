@@ -8,6 +8,15 @@ pipeline {
         POSTGRES_DB = "BackPoloIT"
     }
     stages {
+        stage('Test') {
+            steps {
+                script {
+                    sh "echo 'Hola Mundo'"
+                    sh "ls"
+                }
+            }
+
+        }
         stage('Build') {
             steps {
                 script {
