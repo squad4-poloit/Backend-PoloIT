@@ -1,13 +1,23 @@
-FROM node:20.16
+FROM node:20.16 AS builder
 
 WORKDIR /home/app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
-EXPOSE 3000
+RUN npx prisma generate
 
-CMD [ "npm","run","check" ]
+RUN npx prisma migrate deploy
+
+RUN npm run build
+
+FROM node:20.16
+
+WORKDIR /home/app
+
+COPY --from=builder /home/app ./
+
+CMD ["npm", "run", "start"]

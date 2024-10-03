@@ -2,29 +2,34 @@ version: "3.9"
 services:
   backend:
     build: .
+    restart: always
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=password
-      - DATABASE_NAME=dbPoloIT
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_DOCKER_PORT}/${DB_NAME}
     ports:
-      - "3652:3000"
+      - "${NODE_PORT}:${NODE_DOCKER_PORT}"
     depends_on:
-      - db
-    
+      db:
+        condition: service_healthy
+        restart: true
+    command: ["npm","run","start"]
 
-  database:
+  db:
     image: postgres:16-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=dbPoloIT
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5236:5432"
+    expose:
+      - "${DB_DOCKER_PORT}"
 
 volumes:
   pgdata:

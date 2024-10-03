@@ -7,7 +7,7 @@ services:
     depends_on:
     - db
     ports:
-      - "1234:3000"
+      - "5050:3000"
 
   database:
     environment:
