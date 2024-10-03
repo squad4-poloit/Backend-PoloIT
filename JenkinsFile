@@ -5,6 +5,7 @@ pipeline {
             steps {
                 script {
                     echo "Hola Mundo!"
+                    echo "Hola Mundo!"
                     sh "echo 'Hola Mundo'"
                     sh "ls"
                 }
