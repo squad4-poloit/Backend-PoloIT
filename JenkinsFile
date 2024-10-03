@@ -1,12 +1,5 @@
 pipeline {
     agent any
-
-    environment {
-        // Define las variables de entorno necesarias
-        POSTGRES_USER = "postgres"
-        POSTGRES_PASSWORD = "password"
-        POSTGRES_DB = "BackPoloIT"
-    }
     stages {
         stage('Test') {
             steps {
@@ -35,4 +28,6 @@ pipeline {
                 }
             }
         }
+    }
 }
+
