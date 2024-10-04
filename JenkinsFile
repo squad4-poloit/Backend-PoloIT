@@ -2,18 +2,23 @@ pipeline {
     agent any
     stages {
         stage('Test Tooling ') {
-            steps {
+            steps { 
+                script {            
                 sh '''
                     docker version
                     docker info
                     docker compose version
                     docker compose ps
-                '''
+                    '''
+                }
             }
         }
         stage('Test env ') {
             steps {
-                sh '''echo ${DB_USER}'''
+                script {
+
+                sh "echo ${DB_USER}"
+                }
             }
 
         }
