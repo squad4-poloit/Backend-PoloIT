@@ -1,14 +1,19 @@
 pipeline {
     agent any
     stages {
-        stage('Test') {
+        stage('Test Tooling ') {
             steps {
-                script {
-                    echo "Hola Mundo!"
-                    echo "Hola Mundo!"
-                    sh "echo 'Hola Mundo'"
-                    sh "ls"
-                }
+                sh '''
+                    docker version
+                    docker info
+                    docker compose version
+                    docker compose ps
+                '''
+            }
+        }
+        stage('Test env ') {
+            steps {
+                sh '''echo ${DB_USER}'''
             }
 
         }
@@ -29,6 +34,12 @@ pipeline {
                     """
                 }
             }
+        }
+    }
+    post {
+        always {
+            sh "docker compose down --remove-orphans -v"
+            sh "docker compose ps"
         }
     }
 }
