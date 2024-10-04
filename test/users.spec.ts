@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "@src/app"; // Asegúrate de que esta ruta sea correcta
-import UserService from "@src/services/usersService";
+import UserService from "@src/services/users.service";
 
 // Mockear el servicio UserService
 jest.mock("../src/services/usersService.ts");

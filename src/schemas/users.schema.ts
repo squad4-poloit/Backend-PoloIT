@@ -20,4 +20,4 @@ export const PostUserSchema = z.object({
 	body: z.object({}),
 });
 
-// export type GetUsersQueryType = z.infer<typeof GetUsersSchema>["query"];
+export type GetUsersQueryType = z.infer<typeof GetUsersSchema>["query"];

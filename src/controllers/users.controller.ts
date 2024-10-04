@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import UserService from "@src/services/usersService";
+import UserService from "@src/services/users.service";
 import type { User } from "@prisma/client";
-import { GetUserSchema, GetUsersSchema } from "@src/schemas/user.schema";
+import { GetUserSchema, GetUsersSchema } from "@src/schemas/users.schema";
 import { handleError } from "@src/utils/error.handle";
 
 const getUsers = async (req: Request, res: Response) => {
@@ -42,7 +42,7 @@ const getUser = async (req: Request, res: Response) => {
 
 		const user = await UserService.getUser(params.id);
 
-		res.status(400).json({ status: "400", data: user });
+		res.status(200).json({ status: "200", data: user });
 	} catch (error) {
 		handleError(res, error);
 		console.error(error);
@@ -54,7 +54,7 @@ const postUser = async (req: Request, res: Response) => {
 	try {
 		const newUser = await UserService.createUser(userData);
 
-		res.status(400).json({ status: "400", data: newUser });
+		res.status(200).json({ status: "200", data: newUser });
 	} catch (error) {
 		res.status(404).json({ status: "404", data: "Not Found" });
 		console.error(error);
@@ -66,7 +66,7 @@ const updateUser = async (req: Request, res: Response) => {
 		const fieldsUpdated = req.body;
 		const updatedUser = await UserService.updateUser(userId, fieldsUpdated);
 
-		res.status(400).json({ status: "400", data: updatedUser });
+		res.status(200).json({ status: "200", data: updatedUser });
 	} catch (error) {
 		res.status(404).json({ status: "404", data: "Not Found" });
 		console.error(error);
@@ -78,7 +78,7 @@ const deleteUser = async (req: Request, res: Response) => {
 	try {
 		const deletedUser = await UserService.deleteUser(id);
 
-		res.status(400).json({ status: "400", data: deletedUser });
+		res.status(200).json({ status: "200", data: deletedUser });
 	} catch (error) {
 		res.status(404).json({ status: "404", data: "Not Found" });
 		console.error(error);
