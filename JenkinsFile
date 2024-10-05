@@ -23,6 +23,14 @@ pipeline {
             }
         }
 
+         stage('Init DB') {
+            steps {
+                script {
+                    sh 'npx prisma migrate deploy'
+                }
+            }
+        }
+
         stage('Run Tests (CI)') {
             steps {
                 script {
