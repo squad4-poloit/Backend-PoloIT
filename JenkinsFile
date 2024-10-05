@@ -26,7 +26,7 @@ pipeline {
          stage('Init DB') {
             steps {
                 script {
-                    sh 'npx prisma migrate deploy'
+                    sh 'npm run prisma-migrate:dev'
                 }
             }
         }
