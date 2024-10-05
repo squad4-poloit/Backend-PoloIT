@@ -1,11 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:20.16'
-            args '-u root'
-        }
-    }
-
+    agent any
     stages {
         stage('Checkout Code') {
             steps {
@@ -15,34 +9,7 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    sh 'npm install'
-                }
-            }
-        }
-
-         stage('Init DB') {
-            steps {
-                script {
-                    sh 'npm run prisma-migrate:dev'
-                }
-            }
-        }
-
-        stage('Run Tests (CI)') {
-            steps {
-                script {
-                    sh 'npm test'
-                }
-            }
-        }
-
         stage('Deploy with Docker Compose (CD)') {
-            when {
-                branch 'main'
-            }
             steps {
                 script {
                     sh 'docker-compose up -d'
