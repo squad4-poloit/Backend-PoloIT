@@ -30,16 +30,19 @@ pipeline {
 
         always {
             echo 'Pipeline finished'
+            sh "docker compose ps"
+
         }
 
         success {
             echo 'Pipeline completed successfully'
+            sh "docker compose ps"
         }
 
         failure {
             echo 'Pipeline failed'
-            sh "docker compose down --remove-orphans -v"
             sh "docker compose ps"
+
         }
     }
 
