@@ -21,6 +21,8 @@ pipeline {
                     echo "NODE_PORT=${env.NODE_PORT}" >> .env
                     echo "DATABASE_URL=${env.DATABASE_URL}" >> .env
                     docker compose up -d
+                    docker compose logs
+
                     """
                 }
             }
