@@ -13,16 +13,7 @@ pipeline {
                 }
             }
         }
-        stage('Test env ') {
-            steps {
-                script {
-
-                sh "echo ${DB_USER}"
-                }
-            }
-
-        }
-        stage('Build') {
+        stage('Deploy with Docker Compose (CD)') {
             steps {
                 script {
                     // Ejecutar Docker Compose pasando las variables de entorno
@@ -42,10 +33,21 @@ pipeline {
         }
     }
     post {
+
         always {
+            echo 'Pipeline finished'
+        }
+
+        success {
+            echo 'Pipeline completed successfully'
+        }
+
+        failure {
+            echo 'Pipeline failed'
             sh "docker compose down --remove-orphans -v"
             sh "docker compose ps"
         }
     }
+
 }
 
