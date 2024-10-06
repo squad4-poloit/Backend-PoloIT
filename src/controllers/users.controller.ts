@@ -1,10 +1,8 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import UserService from "@src/services/users.service";
-import type { User } from "@prisma/client";
 import { GetUserSchema, GetUsersSchema } from "@src/schemas/users.schema";
-import { handleError } from "@src/utils/error.handle";
 
-const getUsers = async (req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { query } = GetUsersSchema.parse({
 			query: req.query,
@@ -17,11 +15,11 @@ const getUsers = async (req: Request, res: Response) => {
 			skill,
 		});
 
-		const totalUser = await UserService.getTotalUsers();
+		const totalUsers = await UserService.getTotalUsers();
 		const sendData = {
 			users: list_users,
 			info: {
-				totalUsers: totalUser,
+				totalUsers,
 				page,
 				limit,
 			},
@@ -29,11 +27,11 @@ const getUsers = async (req: Request, res: Response) => {
 
 		res.status(200).json({ status: "200", data: sendData });
 	} catch (error) {
-		handleError(res, error);
+		next(error);
 	}
 };
 
-const getUser = async (req: Request, res: Response) => {
+const getUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { params } = GetUserSchema.parse({
 			params: req.params,
@@ -44,23 +42,11 @@ const getUser = async (req: Request, res: Response) => {
 
 		res.status(200).json({ status: "200", data: user });
 	} catch (error) {
-		handleError(res, error);
-		console.error(error);
+		next(error);
 	}
 };
 
-const postUser = async (req: Request, res: Response) => {
-	const userData: User = req.body;
-	try {
-		const newUser = await UserService.createUser(userData);
-
-		res.status(200).json({ status: "200", data: newUser });
-	} catch (error) {
-		res.status(404).json({ status: "404", data: "Not Found" });
-		console.error(error);
-	}
-};
-const updateUser = async (req: Request, res: Response) => {
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 	const userId = req.params.id;
 	try {
 		const fieldsUpdated = req.body;
@@ -68,21 +54,19 @@ const updateUser = async (req: Request, res: Response) => {
 
 		res.status(200).json({ status: "200", data: updatedUser });
 	} catch (error) {
-		res.status(404).json({ status: "404", data: "Not Found" });
-		console.error(error);
+		next(error);
 	}
 };
 
-const deleteUser = async (req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 	const id = req.params.id;
 	try {
 		const deletedUser = await UserService.deleteUser(id);
 
 		res.status(200).json({ status: "200", data: deletedUser });
 	} catch (error) {
-		res.status(404).json({ status: "404", data: "Not Found" });
-		console.error(error);
+		next(error);
 	}
 };
 
-export { getUsers, getUser, postUser, updateUser, deleteUser };
+export { getUsers, getUser, updateUser, deleteUser };

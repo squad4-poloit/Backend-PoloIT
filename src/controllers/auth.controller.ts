@@ -1,20 +1,29 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { registerNewUser, loginUser } from "@services/auth.service";
+import { PostLoginSchema, PostRegisterSchema } from "@schemas/auth.schema";
 
-const postRegister = async ({ body }: Request, res: Response) => {
-	const responseUser = await registerNewUser(body);
-	res.send(responseUser);
+const postRegister = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { body } = PostRegisterSchema.parse({ body: req.body });
+		const userRegistered = await registerNewUser(body);
+		res.status(200).send(userRegistered);
+	} catch (error) {
+		next(error);
+	}
 };
 
-const postLogin = async ({ body }: Request, res: Response) => {
-	const { email, password } = body;
-	const responseUser = await loginUser({ email, password });
+const postLogin = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { body } = PostLoginSchema.parse({ body: req.body });
 
-	if (responseUser === "PASSWORD_INCORRECT") {
-		res.status(403);
-		res.send(responseUser);
-	} else {
-		res.send(responseUser);
+		const responseUser = await loginUser(body);
+		res.status(200).send(responseUser);
+	} catch (error) {
+		next(error);
 	}
 };
 
