@@ -8,7 +8,7 @@ const handleError = (
 	statusCode?: number,
 	messageError?: string,
 ) => {
-	const message = messageError || "Bad Request";
+	const message = messageError || "Internal Server Error";
 	const status = statusCode || 400;
 	console.error("Error log:", error);
 
@@ -20,7 +20,8 @@ const handleError = (
 	if (error instanceof ZodError) {
 		return res.status(status).json({
 			status,
-			error: "Bad Request",
+			message: message,
+			error: error.message,
 			issues: error.issues.map((issue) => ({
 				path: issue.path,
 				message: issue.message,
@@ -28,7 +29,7 @@ const handleError = (
 		});
 	}
 
-	return res.status(500).json(responseMessage);
+	return res.status(status).json(responseMessage);
 };
 
 export { handleError };
