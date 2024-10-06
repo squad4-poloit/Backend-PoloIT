@@ -1,6 +1,6 @@
 import prisma from "@database/client";
 import type { User } from "@prisma/client";
-import type { UserCustom, UsersFilters } from "@interfaces/user.interfaces";
+import type { UserCustom, UsersFilters } from "@src/interfaces/user.interface";
 
 const selectUser = {
 	id: true,
@@ -24,10 +24,15 @@ const getTotalUsers = async () => {
 	return total;
 };
 
-const IsUserExist = async (id: string): Promise<boolean> => {
-	const existingUser = await prisma.user.findUnique({ where: { id } });
-	const isExist = !!existingUser;
-	return isExist;
+export const isUserExist = async (
+	identifier: string,
+	isEmail = false,
+): Promise<boolean> => {
+	const existingUser = await prisma.user.findUnique({
+		where: isEmail ? { email: identifier } : { id: identifier },
+	});
+
+	return !!existingUser;
 };
 
 const paginatedListUsers = async (
@@ -64,8 +69,8 @@ const paginatedListUsers = async (
 
 const getUser = async (id: string) => {
 	try {
-		const okUser = await IsUserExist(id);
-		if (!okUser) {
+		const checkUser = await isUserExist(id);
+		if (!checkUser) {
 			throw new Error("Usuario no encontrado");
 		}
 
@@ -94,7 +99,7 @@ const createUser = async (user: User) => {
 
 const updateUser = async (id: string, fieldsUpdated: Partial<User>) => {
 	try {
-		const okUser = await IsUserExist(id);
+		const okUser = await isUserExist(id);
 		if (!okUser) {
 			throw new Error("Usuario no encontrado");
 		}
@@ -114,7 +119,7 @@ const updateUser = async (id: string, fieldsUpdated: Partial<User>) => {
 const deleteUser = async (id: string) => {
 	try {
 		// Validar si el usuario existe antes de intentar eliminar
-		const okUser = await IsUserExist(id);
+		const okUser = await isUserExist(id);
 		if (!okUser) {
 			throw new Error("Usuario no encontrado");
 		}

@@ -23,8 +23,8 @@ Table User {
   first_name String [not null]
   last_name String [not null]
   password String [not null]
-  phone String
   birth_date DateTime [not null]
+  phone String
   linkedIn String
   roleId Int [not null]
   institutionId Int [not null]

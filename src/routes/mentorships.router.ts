@@ -6,7 +6,7 @@ import {
 	getMentorships,
 	postMentorship,
 	updateMentorship,
-} from "@controllers/mentorshipsController";
+} from "@src/controllers/mentorships.controller";
 
 const router = Router();
 
