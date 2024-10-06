@@ -16,9 +16,7 @@ pipeline {
                     echo "DB_PASSWORD=${env.DB_PASSWORD}" >> .env
                     echo "DB_NAME=${env.DB_NAME}" >> .env
                     echo "NODE_PORT=${env.NODE_PORT}" >> .env
-                    cat .env
-                    ls
-                    docker compose up -d --env-file .env
+                    docker compose up -d
                     """
                 }
             }
