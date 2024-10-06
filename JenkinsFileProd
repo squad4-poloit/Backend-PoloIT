@@ -20,7 +20,7 @@ pipeline {
                     echo "DB_NAME=${env.DB_NAME}" >> .env
                     echo "NODE_PORT=${env.NODE_PORT}" >> .env
                     echo "DATABASE_URL=${env.DATABASE_URL}" >> .env
-                    docker compose up -d
+                    docker compose up
                     docker compose logs
 
                     """
@@ -32,18 +32,15 @@ pipeline {
 
         always {
             echo 'Pipeline finished'
-            sh "docker compose ps"
 
         }
 
         success {
             echo 'Pipeline completed successfully'
-            sh "docker compose ps"
         }
 
         failure {
             echo 'Pipeline failed'
-            sh "docker compose ps"
 
         }
     }

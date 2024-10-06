@@ -12,7 +12,7 @@ pipeline {
         stage('Deploy with Docker Compose (CD)') {
             steps {
                 script {
-                    sh 'docker compose up'
+                    sh 'docker compose up -d'
                 }
             }
         }
