@@ -25,7 +25,6 @@ services:
     build: .
     restart: always
     environment:
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       - NODE_ENV=production
     ports:
       - "${NODE_PORT}:3030"

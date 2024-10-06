@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public"
+    }
     stages {
         stage('Checkout Code') {
             steps {
@@ -16,6 +19,7 @@ pipeline {
                     echo "DB_PASSWORD=${env.DB_PASSWORD}" >> .env
                     echo "DB_NAME=${env.DB_NAME}" >> .env
                     echo "NODE_PORT=${env.NODE_PORT}" >> .env
+                    echo "DATABASE_URL=${env.DATABASE_URL}" >> .env
                     docker compose up -d
                     """
                 }
