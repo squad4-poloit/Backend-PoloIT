@@ -1,31 +1,20 @@
 pipeline {
     agent any
     stages {
-        stage('Test Tooling ') {
-            steps { 
-                script {            
-                sh '''
-                    docker version
-                    docker info
-                    docker compose version
-                    docker compose ps
-                    '''
+        stage('Checkout Code') {
+            steps {
+                script {
+                    checkout scm
                 }
             }
         }
         stage('Deploy with Docker Compose (CD)') {
             steps {
-                script {
-                    // Ejecutar Docker Compose pasando las variables de entorno
-                    
+                script {                    
                     sh """
                     export DB_USER=${env.DB_USER} 
                     export DB_PASSWORD=${env.DB_PASSWORD} 
-                    export DB_HOST=${env.DB_HOST} 
-                    export DB_PORT=${env.DB_PORT} 
                     export DB_NAME=${env.DB_NAME} 
-                    export DB_DOCKER_PORT=${env.DB_DOCKER_PORT} 
-                    export NODE_DOCKER_PORT=${env.NODE_DOCKER_PORT} 
                     export NODE_PORT=${env.NODE_PORT} 
                     docker compose up -d
                     """
