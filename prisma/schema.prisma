@@ -33,19 +33,19 @@ model Role {
 }
 
 model User {
-  id            String    @id @default(uuid()) //? UUID generado a nivel prisma ORM
-  dni           String    @unique
-  email         String    @unique
-  first_name    String    @db.VarChar(50)
-  last_name     String    @db.VarChar(50)
+  id            String   @id @default(uuid()) //? UUID generado a nivel prisma ORM
+  dni           String   @unique
+  email         String   @unique
+  first_name    String   @db.VarChar(50)
+  last_name     String   @db.VarChar(50)
   password      String
-  birth_date    DateTime?
-  phone         String?
-  linkedIn      String?
+  birth_date    DateTime @db.Date
+  phone         String?  @db.VarChar(50)
+  linkedIn      String?  @db.VarChar(50)
   roleId        Int
   institutionId Int
-  create_at     DateTime  @default(now())
-  update_at     DateTime  @updatedAt
+  create_at     DateTime @default(now())
+  update_at     DateTime @updatedAt
 
   role        Role               @relation(fields: [roleId], references: [id])
   institution Institution        @relation(fields: [institutionId], references: [id])
