@@ -1,8 +1,11 @@
-import { encrypt, verified } from "../utils/bcrypt.handle";
-import { generateToken } from "../utils/jwt.handle";
+import { encrypt, verified } from "@utils/bcrypt.handle";
+import { generateToken } from "@utils/jwt.handle";
 import prisma from "@database/client";
 import type { Auth } from "@interfaces/auth.interface";
 import type { User } from "@prisma/client";
+import type { PostRegisterType } from "@src/schemas/auth.schema";
+import errors from "@src/lib/customErrors";
+// import errors from "@src/lib/customErrors";
 
 const registerNewUser = async ({
 	dni,
@@ -13,12 +16,10 @@ const registerNewUser = async ({
 	birth_date,
 	roleId,
 	institutionId,
-}: User) => {
-	const checkIs = await prisma.user.findUnique({ where: { email } });
-	if (checkIs) {
-		throw new Error(`Usuario con email ${email} ya existe`);
-	}
-	const passHash = await encrypt(password); //TODO 12345678
+}: PostRegisterType["body"]): Promise<User> => {
+	console.log(email);
+
+	const passHash = await encrypt(password);
 	const registerNewUser = await prisma.user.create({
 		data: {
 			dni,
@@ -31,26 +32,24 @@ const registerNewUser = async ({
 			institutionId,
 		},
 	});
-	//TODO 123456
+
 	return registerNewUser;
 };
 
 const loginUser = async ({ email, password }: Auth) => {
-	const checkUser = await prisma.user.findUnique({ where: { email } });
-	if (checkUser) {
-		const passwordHash = checkUser.password; //TODO el encriptado!
-		const isCorrect = await verified(password, passwordHash);
+	const user = await prisma.user.findUniqueOrThrow({ where: { email } }); // Si no encuentra al usuario lanza un error
 
-		if (!isCorrect) return "PASSWORD_INCORRECT";
+	const passwordHash = user.password; //TODO el encriptado!
+	const isCorrect = await verified(password, passwordHash);
 
-		const token = generateToken(checkUser.email);
-		const data = {
-			token,
-			user: checkUser,
-		};
-		return data;
-	}
-	throw new Error("Usuario no encontrado");
+	if (!isCorrect) throw errors.invalid_pass;
+
+	const token = generateToken(user.email);
+	const data = {
+		token,
+		user: user,
+	};
+	return data;
 };
 
 export { registerNewUser, loginUser };
