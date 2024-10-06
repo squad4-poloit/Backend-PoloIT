@@ -3,31 +3,30 @@ services:
     env_file: ".env"
     image: postgres:16-alpine
     restart: always
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_PASSWORD}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   backend:
     env_file: ".env"
+    build: .
+    restart: always
     depends_on:
       db:
         condition: service_healthy
-        restart: true
-    build: .
-    restart: always
     environment:
       - NODE_ENV=production
     ports:
-      - "${NODE_PORT}:3030"
+      - ${NODE_PORT}:3030
 
     command: ["npm","run","start"]
 
