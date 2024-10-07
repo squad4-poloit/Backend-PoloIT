@@ -86,10 +86,20 @@ const paginatedListUsers = async (
 					name: true,
 				},
 			},
+			_count: {
+				select: {
+					mentorships: true,
+				},
+			},
 		},
 	});
+	const formattedUsers = users.map((user) => ({
+		...user,
+		mentorshipCount: user._count?.mentorships,
+		_count: undefined,
+	}));
 
-	return users;
+	return formattedUsers;
 };
 
 const getUser = async (id: string) => {
