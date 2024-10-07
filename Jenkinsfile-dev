@@ -22,14 +22,18 @@ pipeline {
                 }
             }
         }
+        stage('Verify Node Container') {
+            steps {
+                script {
+                    echo 'Verificando si el contenedor está corriendo...'
+                    sh 'docker ps | grep backend_nodejs'
+                }
+            }
+        }
     }
     post {
-        cleanup {
-            deleteDir() // Elimina los archivos temporales creados por este job
-        }
         always {
             echo 'Pipeline finished'
-
         }
     }
 }

@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout Code') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+        stage('Deploy with Docker Compose (CD)') {
+            steps {
+                script {                    
+                    sh """
+                    echo "DB_USER=${env.DB_USER}" >> .env
+                    echo "DB_PASSWORD=${env.DB_PASSWORD}" >> .env
+                    echo "DB_NAME=${env.DB_NAME}" >> .env
+                    echo "NODE_PORT=${env.NODE_PORT}" >> .env
+                    echo "DATABASE_URL=postgresql://${env.DB_USER}:${env.DB_PASSWORD}@db:5432/${env.DB_NAME}?schema=public" >> .env
+                    docker compose up -d
+                    """
+                }
+            }
+        }
+        stage('Verify Node Container') {
+            steps {
+                script {
+                    echo 'Verificando si el contenedor está corriendo...'
+                    sh 'docker ps | grep backend_nodejs'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline finished'
+        }
+    }
+}
+

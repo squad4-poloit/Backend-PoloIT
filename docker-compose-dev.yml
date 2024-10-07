@@ -1,13 +1,11 @@
-version: '3.9'
-
 services:
   backend:
-    command: sh -c "npm install && npm run dev"
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-
-
-  database:
+    env_file: ".env"
+    build: .
+    restart: always
     environment:
-      - POSTGRES_DB=dbPoloIT
+      - NODE_ENV=${NODE_ENV}
+    ports:
+      - ${NODE_PORT}:3030
+
+    command: ["npm","run","start"]
