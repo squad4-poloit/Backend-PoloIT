@@ -12,10 +12,30 @@ const selectUser = {
 	birth_date: true,
 	linkedIn: true,
 	phone: true,
-	role: true,
-	institution: true,
-	skills: true,
-	mentorships: true,
+	role: {
+		select: {
+			id: true,
+			name: true,
+		},
+	},
+	institution: {
+		select: {
+			id: true,
+			name: true,
+			type: true,
+		},
+	},
+	skills: {
+		select: {
+			id: true,
+			name: true,
+		},
+	},
+	_count: {
+		select: {
+			mentorships: true,
+		},
+	},
 };
 
 const getTotalUsers = async () => {
@@ -58,40 +78,7 @@ const paginatedListUsers = async (
 		skip,
 		take,
 		where,
-		select: {
-			id: true,
-			dni: true,
-			email: true,
-			first_name: true,
-			last_name: true,
-			birth_date: true,
-			linkedIn: true,
-			phone: true,
-			role: {
-				select: {
-					id: true,
-					name: true,
-				},
-			},
-			institution: {
-				select: {
-					id: true,
-					name: true,
-					type: true,
-				},
-			},
-			skills: {
-				select: {
-					id: true,
-					name: true,
-				},
-			},
-			_count: {
-				select: {
-					mentorships: true,
-				},
-			},
-		},
+		select: selectUser,
 	});
 	const formattedUsers = users.map((user) => ({
 		...user,
