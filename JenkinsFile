@@ -19,16 +19,12 @@ pipeline {
     }
 
     post {
+        cleanup {
+            deleteDir() // Elimina los archivos temporales creados por este job
+        }
         always {
             echo 'Pipeline finished'
-        }
 
-        success {
-            echo 'Pipeline completed successfully'
-        }
-
-        failure {
-            echo 'Pipeline failed'
         }
     }
 }
