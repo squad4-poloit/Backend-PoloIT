@@ -61,7 +61,7 @@ Table UserOnMentorship {
 Table Institution {
   id Int [pk, increment]
   name String [not null]
-  type TypeInstitution [not null, default: 'POLO_IT']
+  type TypeInstitution [not null]
 }
 
 Table Skill {
