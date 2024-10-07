@@ -1,6 +1,7 @@
 import prisma from "@database/client";
 import type { User } from "@prisma/client";
-import type { UserCustom, UsersFilters } from "@src/interfaces/user.interface";
+import type { UsersFilters } from "@src/interfaces/user.interface";
+import errors from "@src/lib/customErrors";
 
 const selectUser = {
 	id: true,
@@ -11,8 +12,6 @@ const selectUser = {
 	birth_date: true,
 	linkedIn: true,
 	phone: true,
-	institutionId: true,
-	roleId: true,
 	role: true,
 	institution: true,
 	skills: true,
@@ -39,13 +38,16 @@ const paginatedListUsers = async (
 	page = 1,
 	limit = 10,
 	filters?: UsersFilters,
-): Promise<UserCustom[]> => {
+) => {
 	const take = limit;
 	const skip = (page - 1) * limit;
 	let where = {};
 	if (filters) {
-		const { role, institution, skill } = filters;
+		const { role, institution, skill, id_insti, id_role, id_skill } = filters;
 		where = {
+			...(id_role && { role: { id: id_role } }),
+			...(id_insti && { institution: { id: id_insti } }),
+			...(id_skill && { skills: { some: { id: skill } } }),
 			...(role && { role: { name: role } }),
 			...(institution && { institution: { name: institution } }),
 			...(skill && { skills: { some: { name: skill } } }),
@@ -56,83 +58,84 @@ const paginatedListUsers = async (
 		skip,
 		take,
 		where,
-		select: selectUser,
+		select: {
+			id: true,
+			dni: true,
+			email: true,
+			first_name: true,
+			last_name: true,
+			birth_date: true,
+			linkedIn: true,
+			phone: true,
+			role: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+			institution: {
+				select: {
+					id: true,
+					name: true,
+					type: true,
+				},
+			},
+			skills: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+		},
 	});
 
 	return users;
 };
 
 const getUser = async (id: string) => {
-	try {
-		const checkUser = await isUserExist(id);
-		if (!checkUser) {
-			throw new Error("Usuario no encontrado");
-		}
+	const checkUser = await isUserExist(id);
+	if (!checkUser) {
+		throw errors.not_found.withDetails("Usuario no encontrado");
+	}
 
-		const user = await prisma.user.findUnique({
-			where: {
-				id,
-			},
-			select: selectUser,
-		});
-		return user;
-	} catch (error) {
-		console.error(`Error fetching user with id ${id}:`, error);
-		throw new Error("Failed to fetch user");
-	}
-};
-const createUser = async (user: User) => {
-	try {
-		const newUser = await prisma.user.create({
-			data: { ...user },
-		});
-		return newUser;
-	} catch (error) {
-		throw new Error("Error creando el usuario");
-	}
+	const user = await prisma.user.findUnique({
+		where: {
+			id,
+		},
+		select: selectUser,
+	});
+	return user;
 };
 
 const updateUser = async (id: string, fieldsUpdated: Partial<User>) => {
-	try {
-		const okUser = await isUserExist(id);
-		if (!okUser) {
-			throw new Error("Usuario no encontrado");
-		}
-
-		const updatedUser = await prisma.user.update({
-			where: { id },
-			data: fieldsUpdated,
-		});
-		return updatedUser;
-	} catch (error) {
-		// Manejo de errores
-		throw new Error("Error actualizando el usuario");
+	const okUser = await isUserExist(id);
+	if (!okUser) {
+		throw errors.not_found.withDetails("El id del usuario no existe");
 	}
+
+	const updatedUser = await prisma.user.update({
+		where: { id },
+		data: fieldsUpdated,
+	});
+	return updatedUser;
 };
 
 // Eliminación de un usuario
 const deleteUser = async (id: string) => {
-	try {
-		// Validar si el usuario existe antes de intentar eliminar
-		const okUser = await isUserExist(id);
-		if (!okUser) {
-			throw new Error("Usuario no encontrado");
-		}
-
-		const deletedUser = await prisma.user.delete({
-			where: { id },
-		});
-		return deletedUser;
-	} catch (error) {
-		// Manejo de errores
-		throw new Error("Error eliminando el usuario");
+	const okUser = await isUserExist(id);
+	if (!okUser) {
+		throw errors.not_found.withDetails("El id del usuario no existe");
 	}
+
+	const deletedUser = await prisma.user.delete({
+		where: { id },
+	});
+	return deletedUser;
 };
 
 export default {
 	paginatedListUsers,
 	getUser,
-	createUser,
 	updateUser,
 	deleteUser,
 	getTotalUsers,

@@ -7,12 +7,24 @@ const getUsers = async (req: Request, res: Response, next: NextFunction) => {
 		const { query } = GetUsersSchema.parse({
 			query: req.query,
 		});
-		const { limit, page, institution, role, skill } = query;
+		const {
+			limit,
+			page,
+			institution,
+			role,
+			skill,
+			id_insti,
+			id_role,
+			id_skill,
+		} = query;
 
 		const list_users = await UserService.paginatedListUsers(page, limit, {
 			role,
 			institution,
 			skill,
+			id_insti,
+			id_role,
+			id_skill,
 		});
 
 		const totalUsers = await UserService.getTotalUsers();
