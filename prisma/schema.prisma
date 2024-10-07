@@ -85,7 +85,7 @@ model UserOnMentorship {
 model Institution {
   id   Int             @id @default(autoincrement())
   name String
-  type TypeInstitution @default(POLO_IT)
+  type TypeInstitution
 
   User User[]
 }

@@ -40,31 +40,26 @@ const paginatedListUsers = async (
 	limit = 10,
 	filters?: UsersFilters,
 ): Promise<UserCustom[]> => {
-	try {
-		const take = limit;
-		const skip = (page - 1) * limit;
-		let where = {};
-		if (filters) {
-			const { role, institution, skill } = filters;
-			where = {
-				...(role && { role: { name: role } }),
-				...(institution && { institution: { name: institution } }),
-				...(skill && { skills: { some: { name: skill } } }),
-			};
-		}
-
-		const users = await prisma.user.findMany({
-			skip,
-			take,
-			where,
-			select: selectUser,
-		});
-
-		return users;
-	} catch (error) {
-		console.error("Error fetching users:", error);
-		throw new Error("Failed to fetch users");
+	const take = limit;
+	const skip = (page - 1) * limit;
+	let where = {};
+	if (filters) {
+		const { role, institution, skill } = filters;
+		where = {
+			...(role && { role: { name: role } }),
+			...(institution && { institution: { name: institution } }),
+			...(skill && { skills: { some: { name: skill } } }),
+		};
 	}
+
+	const users = await prisma.user.findMany({
+		skip,
+		take,
+		where,
+		select: selectUser,
+	});
+
+	return users;
 };
 
 const getUser = async (id: string) => {
