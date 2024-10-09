@@ -1,83 +1,90 @@
 import type { NextFunction, Request, Response } from "express";
-import prisma from "@database/client";
-import mentorshipsService from "@services/mentorships.service";
+import MentorshipService from "@services/mentorships.service";
 
-const getMentorships = async (_req: Request, res: Response) => {
-	try {
-		const allMentorships = await prisma.mentorship.findMany();
-		res.status(200).json({ status: "400", data: allMentorships });
-	} catch (error) {
-		res.status(404).send({ status: "404", data: "Not Found" });
-		console.error(error);
-	}
-};
-
-const getMentorship = async (req: Request, res: Response) => {
-	const mentorship_id = Number(req.params.id);
-	try {
-		const mentorship = await prisma.mentorship.findFirst({
-			where: {
-				id: mentorship_id,
-			},
-		});
-		res.status(400).json({ status: "400", data: mentorship });
-	} catch (error) {
-		res.status(404).json({ status: "404", data: "Not Found" });
-		console.error(error);
-	}
-};
-
-const postMentorship = async (req: Request, res: Response) => {
-	const mentorship = req.body;
-	try {
-		const newMentorship = await prisma.mentorship.create({
-			data: mentorship,
-		});
-		res.status(400).json({ status: "400", data: newMentorship });
-	} catch (error) {
-		res.status(404).json({ status: "404", data: "Not Found" });
-		console.error(error);
-	}
-};
-
-const updateMentorship = async (req: Request, res: Response) => {
-	const mentorship_id = Number(req.params.id);
-	try {
-		const mentorship = req.body;
-		const updatedMentorship = await prisma.mentorship.update({
-			where: {
-				id: mentorship_id,
-			},
-			data: mentorship,
-		});
-		res.status(400).json({ status: "400", data: updatedMentorship });
-	} catch (error) {
-		res.status(404).json({ status: "404", data: "Not Found" });
-		console.error(error);
-	}
-};
-const deleteMentorship = async (req: Request, res: Response) => {
-	const mentorship_id = Number(req.params.id);
-	try {
-		const deletedMentorship = await prisma.mentorship.delete({
-			where: {
-				id: mentorship_id,
-			},
-		});
-		res.status(400).json({ status: "400", data: deletedMentorship });
-	} catch (error) {
-		res.status(404).json({ status: "404", data: "Not Found" });
-		console.error(error);
-	}
-};
-
-const postUserToMentorship = async (
+const getMentorships = async (
 	_req: Request,
 	res: Response,
 	next: NextFunction,
 ) => {
 	try {
-		const resQuery = await mentorshipsService;
+		const allMentorships = await MentorshipService.getListMentorships();
+		res.status(200).json({ status: "200", data: allMentorships });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getMentorship = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const mentorship_id = Number(req.params.id);
+		const mentorship = await MentorshipService.getMentorship(mentorship_id);
+		res.status(200).json({ status: "200", data: mentorship });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const postMentorship = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const mentorship = req.body;
+		const newMentorship = await MentorshipService.createMentorship(mentorship);
+		res.status(200).json({ status: "200", data: newMentorship });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const updateMentorship = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const mentorship_id = Number(req.params.id);
+		const mentorship = req.body;
+		const updatedMentorship = await MentorshipService.updateMentorship(
+			mentorship_id,
+			mentorship,
+		);
+		res.status(200).json({ status: "200", data: updatedMentorship });
+	} catch (error) {
+		next(error);
+	}
+};
+const deleteMentorship = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const mentorship_id = Number(req.params.id);
+		const deletedMentorship = MentorshipService.deleteMentorship(mentorship_id);
+		res.status(200).json({ status: "200", data: deletedMentorship });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const postUserToMentorship = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const userId = req.body.userId;
+		const mentorshipId = Number(req.params.id);
+		const resQuery = await MentorshipService.addUserToMentorship(
+			userId,
+			mentorshipId,
+		);
 		res.status(200).json({ status: "200", data: resQuery });
 	} catch (error) {
 		next(error);

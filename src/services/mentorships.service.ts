@@ -83,6 +83,21 @@ const deleteMentorship = async (id: number) => {
 	return deletedMentorship;
 };
 
+const addUserToMentorship = async (userId: string, mentorshipId: number) => {
+	const userOnMentorship = await prisma.userOnMentorship.create({
+		data: {
+			user: {
+				connect: { id: userId },
+			},
+			mentorship: {
+				connect: { id: mentorshipId },
+			},
+		},
+	});
+
+	return userOnMentorship;
+};
+
 export default {
 	getListMentorships,
 	getMentorship,
@@ -90,4 +105,5 @@ export default {
 	updateMentorship,
 	deleteMentorship,
 	getTotalMentorships,
+	addUserToMentorship,
 };
