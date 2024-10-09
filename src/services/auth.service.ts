@@ -3,9 +3,8 @@ import { generateToken } from "@utils/jwt.handle";
 import prisma from "@database/client";
 import type { Auth } from "@interfaces/auth.interface";
 import type { User } from "@prisma/client";
-import type { PostRegisterType } from "@src/schemas/auth.schema";
-import errors from "@src/lib/customErrors";
-// import errors from "@src/lib/customErrors";
+import type { PostRegisterType } from "@schemas/auth.schema";
+import errors from "@lib/customErrors";
 
 const registerNewUser = async ({
 	dni,

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import InstitutionService from "@src/services/institutions.service";
-import { idSchema } from "@src/schemas/uitls.schema";
+import InstitutionService from "@services/institutions.service";
+import { idSchema } from "@schemas/uitls.schema";
 
 const getInstitutions = async (
 	_req: Request,

@@ -19,7 +19,6 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "paths": {
-      "@src/*": ["src/*"],
       "@database/*": ["prisma/*"],
       "@controllers/*": ["src/controllers/*"],
       "@routes/*": ["src/routes/*"],
@@ -27,7 +26,8 @@
       "@schemas/*": ["src/schemas/*"],
       "@interfaces/*" : ["src/interfaces/*"],
       "@middlewares/*" : ["src/middlewares/*"],
-      "@utils/*" : ["src/utils/*"]
+      "@utils/*" : ["src/utils/*"],
+      "@lib/*" : ["src/lib/*"]
 
     }
   },

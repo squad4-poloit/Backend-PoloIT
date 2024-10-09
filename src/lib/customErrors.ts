@@ -1,4 +1,4 @@
-import ApiError from "@src/utils/api.error";
+import ApiError from "@utils/api.error";
 
 const errors = {
 	permission_failed: new ApiError(

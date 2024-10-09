@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import ApiError from "@src/utils/api.error"; // Asegúrate de que la ruta sea correcta
+import ApiError from "@utils/api.error";
 import type { NextFunction, Request, Response } from "express";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 

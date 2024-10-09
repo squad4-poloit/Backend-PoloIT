@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import SkillService from "@src/services/skills.service";
-import { idSchema } from "@src/schemas/uitls.schema";
+import SkillService from "@services/skills.service";
+import { idSchema } from "@schemas/uitls.schema";
 
 const getSkills = async (_req: Request, res: Response, next: NextFunction) => {
 	try {

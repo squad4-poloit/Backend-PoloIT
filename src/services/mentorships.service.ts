@@ -1,6 +1,6 @@
 import prisma from "@database/client";
 import type { Mentorship } from "@prisma/client";
-import errors from "@src/lib/customErrors";
+import errors from "@lib/customErrors";
 
 const selectMentorship = {
 	id: true,

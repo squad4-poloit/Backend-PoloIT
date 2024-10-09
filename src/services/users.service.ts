@@ -1,7 +1,7 @@
 import prisma from "@database/client";
 import type { User } from "@prisma/client";
-import type { UsersFilters } from "@src/interfaces/user.interface";
-import errors from "@src/lib/customErrors";
+import type { UsersFilters } from "@interfaces/user.interface";
+import errors from "@lib/customErrors";
 
 const selectUser = {
 	id: true,

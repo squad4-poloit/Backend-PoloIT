@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import UserService from "@src/services/users.service";
-import { GetUserSchema, GetUsersSchema } from "@src/schemas/users.schema";
+import UserService from "@services/users.service";
+import { GetUserSchema, GetUsersSchema } from "@schemas/users.schema";
 
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
 	try {

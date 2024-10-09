@@ -8,8 +8,8 @@ class ApiError extends Error {
 		super(message);
 		this.httpCode = httpCode;
 		this.type = type;
-		this.name = "ApiError"; // Nombre explícito del error
-		Error.captureStackTrace(this, this.constructor); // Captura la traza de stack correctamente
+		this.name = "ApiError";
+		Error.captureStackTrace(this, this.constructor);
 	}
 
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>

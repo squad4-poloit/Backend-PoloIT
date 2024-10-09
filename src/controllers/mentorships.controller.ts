@@ -1,5 +1,6 @@
-import type { Request, Response } from "express";
-import prisma from "../../prisma/client";
+import type { NextFunction, Request, Response } from "express";
+import prisma from "@database/client";
+import mentorshipsService from "@services/mentorships.service";
 
 const getMentorships = async (_req: Request, res: Response) => {
 	try {
@@ -70,10 +71,24 @@ const deleteMentorship = async (req: Request, res: Response) => {
 	}
 };
 
+const postUserToMentorship = async (
+	_req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const resQuery = await mentorshipsService;
+		res.status(200).json({ status: "200", data: resQuery });
+	} catch (error) {
+		next(error);
+	}
+};
+
 export {
 	getMentorships,
 	getMentorship,
 	postMentorship,
 	updateMentorship,
 	deleteMentorship,
+	postUserToMentorship,
 };
