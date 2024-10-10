@@ -3,6 +3,8 @@ import cors from "cors";
 import morgan from "morgan";
 import { router } from "src/routes";
 import { errorHandler } from "./middlewares/errorHandler";
+import swaggerUi from "swagger-ui-express";
+import swaggerSetup from "./swagger";
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
@@ -18,6 +20,8 @@ app.get("/", (_req, res) => {
 	res.send("<h2>Api Sistema de Gestión de inscripciones PoloIT</h2>");
 });
 app.use(errorHandler);
+
+app.use("/api/documentation", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 app.listen(PORT, () => {
 	console.log(`

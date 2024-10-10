@@ -12,6 +12,7 @@
 		"ignore": [
 			"dist/**",
 			"node_modules/**",
+			"node_modules/**/*.ts",
 			"prisma/*.prisma"
 		]
 	},

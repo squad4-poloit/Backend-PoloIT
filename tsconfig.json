@@ -27,7 +27,8 @@
       "@interfaces/*" : ["src/interfaces/*"],
       "@middlewares/*" : ["src/middlewares/*"],
       "@utils/*" : ["src/utils/*"],
-      "@lib/*" : ["src/lib/*"]
+      "@lib/*" : ["src/lib/*"],
+      "@app" : ["src/app"]
 
     }
   },

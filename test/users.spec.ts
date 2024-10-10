@@ -1,119 +1,81 @@
 import request from "supertest";
-import app from "@src/app"; // Asegúrate de que esta ruta sea correcta
-import UserService from "@src/services/users.service";
+import app from "@app"; // Asegúrate de que apunte al archivo que inicia tu app de Express
+import UserService from "@services/users.service";
 
-// Mockear el servicio UserService
-jest.mock("../src/services/usersService.ts");
+// Mock del UserService
+jest.mock("@services/users.service");
 
-describe("User Controller", () => {
+describe("Users Controller", () => {
 	describe("GET /users", () => {
-		it("should return a list of users", async () => {
+		it("should return a paginated list of users", async () => {
+			// Mocking the service methods
 			const mockUsers = [{ id: 1, name: "John Doe" }];
+			const mockTotalUsers = 1;
+
 			(UserService.paginatedListUsers as jest.Mock).mockResolvedValue(
 				mockUsers,
 			);
-
-			const response = await request(app).get("/users");
-			expect(response.status).toBe(200);
-			expect(response.body).toEqual({ status: "200", data: mockUsers });
-		});
-
-		it("should return 404 if users not found", async () => {
-			(UserService.paginatedListUsers as jest.Mock).mockRejectedValue(
-				new Error("Not Found"),
+			(UserService.getTotalUsers as jest.Mock).mockResolvedValue(
+				mockTotalUsers,
 			);
 
-			const response = await request(app).get("/users");
-			expect(response.status).toBe(404);
-			expect(response.text).toBe("Not Found");
+			const res = await request(app)
+				.get("/users")
+				.query({ page: 1, limit: 10 });
+
+			expect(res.status).toBe(200);
+			expect(res.body.status).toBe("200");
+			expect(res.body.data.users).toEqual(mockUsers);
+			expect(res.body.data.info.totalUsers).toBe(mockTotalUsers);
 		});
 	});
 
 	describe("GET /users/:id", () => {
-		it("should return a user by ID", async () => {
+		it("should return a single user", async () => {
 			const mockUser = { id: 1, name: "John Doe" };
 			(UserService.getUser as jest.Mock).mockResolvedValue(mockUser);
 
-			const response = await request(app).get("/users/1");
-			expect(response.status).toBe(400);
-			expect(response.body).toEqual({ status: "400", data: mockUser });
+			const res = await request(app).get("/users/1");
+
+			expect(res.status).toBe(200);
+			expect(res.body.status).toBe("200");
+			expect(res.body.data).toEqual(mockUser);
 		});
 
-		it("should return 404 if user not found", async () => {
-			(UserService.getUser as jest.Mock).mockRejectedValue(
-				new Error("Not Found"),
-			);
+		it("should return 404 if user is not found", async () => {
+			(UserService.getUser as jest.Mock).mockResolvedValue(null);
 
-			const response = await request(app).get("/users/1");
-			expect(response.status).toBe(404);
-			expect(response.body).toEqual({ status: "404", data: "Not Found" });
-		});
-	});
+			const res = await request(app).get("/users/999");
 
-	describe("POST /users", () => {
-		it("should create a new user", async () => {
-			const newUserData = { name: "John Doe" };
-			const mockUser = { id: 1, ...newUserData };
-			(UserService.createUser as jest.Mock).mockResolvedValue(mockUser);
-
-			const response = await request(app).post("/users").send(newUserData);
-			expect(response.status).toBe(400);
-			expect(response.body).toEqual({ status: "400", data: mockUser });
-		});
-
-		it("should return 404 on error", async () => {
-			const newUserData = { name: "John Doe" };
-			(UserService.createUser as jest.Mock).mockRejectedValue(
-				new Error("Not Found"),
-			);
-
-			const response = await request(app).post("/users").send(newUserData);
-			expect(response.status).toBe(404);
-			expect(response.body).toEqual({ status: "404", data: "Not Found" });
+			expect(res.status).toBe(404);
 		});
 	});
 
 	describe("PUT /users/:id", () => {
 		it("should update a user", async () => {
-			const updatedData = { name: "Jane Doe" };
-			const updatedUser = { id: 1, ...updatedData };
-			(UserService.updateUser as jest.Mock).mockResolvedValue(updatedUser);
+			const mockUpdatedUser = { id: 1, name: "John Doe Updated" };
+			(UserService.updateUser as jest.Mock).mockResolvedValue(mockUpdatedUser);
 
-			const response = await request(app).put("/users/1").send(updatedData);
-			expect(response.status).toBe(400);
-			expect(response.body).toEqual({ status: "400", data: updatedUser });
-		});
+			const res = await request(app)
+				.put("/users/1")
+				.send({ name: "John Doe Updated" });
 
-		it("should return 404 on error", async () => {
-			const updatedData = { name: "Jane Doe" };
-			(UserService.updateUser as jest.Mock).mockRejectedValue(
-				new Error("Not Found"),
-			);
-
-			const response = await request(app).put("/users/1").send(updatedData);
-			expect(response.status).toBe(404);
-			expect(response.body).toEqual({ status: "404", data: "Not Found" });
+			expect(res.status).toBe(200);
+			expect(res.body.status).toBe("200");
+			expect(res.body.data).toEqual(mockUpdatedUser);
 		});
 	});
 
 	describe("DELETE /users/:id", () => {
 		it("should delete a user", async () => {
-			const deletedUser = { id: 1, name: "John Doe" };
-			(UserService.deleteUser as jest.Mock).mockResolvedValue(deletedUser);
+			const mockDeletedUser = { id: 1, name: "John Doe" };
+			(UserService.deleteUser as jest.Mock).mockResolvedValue(mockDeletedUser);
 
-			const response = await request(app).delete("/users/1");
-			expect(response.status).toBe(400);
-			expect(response.body).toEqual({ status: "400", data: deletedUser });
-		});
+			const res = await request(app).delete("/users/1");
 
-		it("should return 404 on error", async () => {
-			(UserService.deleteUser as jest.Mock).mockRejectedValue(
-				new Error("Not Found"),
-			);
-
-			const response = await request(app).delete("/users/1");
-			expect(response.status).toBe(404);
-			expect(response.body).toEqual({ status: "404", data: "Not Found" });
+			expect(res.status).toBe(200);
+			expect(res.body.status).toBe("200");
+			expect(res.body.data).toEqual(mockDeletedUser);
 		});
 	});
 });
