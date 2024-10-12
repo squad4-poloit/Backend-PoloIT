@@ -10,7 +10,11 @@ const postRegister = async (
 	try {
 		const { body } = PostRegisterSchema.parse({ body: req.body });
 		const userRegistered = await registerNewUser(body);
-		res.status(200).send(userRegistered);
+		res.status(200).json({
+			status: 200,
+			message: "Registro realizado con exito",
+			user: userRegistered,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -20,8 +24,22 @@ const postLogin = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { body } = PostLoginSchema.parse({ body: req.body });
 
-		const responseUser = await loginUser(body);
-		res.status(200).send(responseUser);
+		const resLogin = await loginUser(body);
+		const token = resLogin.token;
+		const isProd = process.env.NODE_ENV === "production";
+		console.log(`estamos en produccion: ${isProd}`);
+		res.cookie("token", token, {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			maxAge: 3600000,
+		});
+		res.status(200).json({
+			status: 200,
+			message: "Login exitoso y token enviado en cookie",
+			token,
+			user: resLogin.user,
+		});
 	} catch (error) {
 		next(error);
 	}

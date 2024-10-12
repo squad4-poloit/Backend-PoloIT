@@ -84,6 +84,7 @@ const deleteMentorship = async (id: number) => {
 };
 
 const addUserToMentorship = async (userId: string, mentorshipId: number) => {
+	//TODO a
 	const userOnMentorship = await prisma.userOnMentorship.create({
 		data: {
 			user: {

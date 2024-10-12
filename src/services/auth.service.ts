@@ -35,20 +35,43 @@ const registerNewUser = async ({
 	return registerNewUser;
 };
 
-const loginUser = async ({ email, password }: Auth) => {
-	const user = await prisma.user.findUniqueOrThrow({ where: { email } }); // Si no encuentra al usuario lanza un error
+const loginUser = async (loginParams: Auth) => {
+	const user = await prisma.user.findUniqueOrThrow({
+		where: { email: loginParams.email },
+		select: {
+			id: true,
+			email: true,
+			first_name: true,
+			last_name: true,
+			password: true,
+			role: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+		},
+	});
 
-	const passwordHash = user.password; //TODO el encriptado!
-	const isCorrect = await verified(password, passwordHash);
+	const passwordHash = user.password;
+	const isCorrect = await verified(loginParams.password, passwordHash);
 
 	if (!isCorrect) throw errors.invalid_pass;
-
-	const token = generateToken(user.email);
-	const data = {
-		token,
-		user: user,
+	const userPayload = {
+		id: user.id,
+		email: user.email,
+		role: user.role,
 	};
-	return data;
+
+	const token = generateToken(userPayload);
+
+	const { password, ...rest } = user;
+
+	const loginUser = {
+		token,
+		user: rest,
+	};
+	return loginUser;
 };
 
 export { registerNewUser, loginUser };
