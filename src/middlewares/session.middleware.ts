@@ -23,7 +23,7 @@ const sessionAuth = (req: RequestJWT, _res: Response, next: NextFunction) => {
 		const authCookie = req.cookies.token || "";
 		console.log(`Auth Header: ${authHeader}`);
 		console.log(`Cookie: ${authCookie}`);
-		if ((!authCookie && !authHeader) || !authHeader.startsWith("Bearer ")) {
+		if (!authCookie && !authHeader.startsWith("Bearer ")) {
 			throw errors.authorization_failed.withDetails(
 				"Falta un metodo de autorización",
 			);
@@ -43,4 +43,29 @@ const sessionAuth = (req: RequestJWT, _res: Response, next: NextFunction) => {
 	}
 };
 
-export { sessionAuth };
+const rolesAuth =
+	(authorizedRoles: string[]) =>
+	(req: RequestJWT, _res: Response, next: NextFunction) => {
+		console.log("Pasando por la verificacion de roles permitidos");
+
+		try {
+			const userSession = req.user;
+
+			if (!isUser(userSession)) {
+				throw errors.authentication_failed.withDetails(
+					"No tiene un JWT valido",
+				);
+			}
+			const isAuth = authorizedRoles.includes(userSession.role.name);
+			if (!isAuth) {
+				throw errors.invalid_access.withDetails(
+					"No tienes permisos para realizar esta acción",
+				);
+			}
+			next();
+		} catch (error) {
+			next(error);
+		}
+	};
+
+export { sessionAuth, rolesAuth };
