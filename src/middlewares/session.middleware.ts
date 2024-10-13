@@ -1,12 +1,7 @@
 import type { NextFunction, Response } from "express";
 import type { RequestJWT, UserPayload } from "@interfaces/auth.interface";
 import { verifyToken } from "@utils/jwt.handle";
-
-const ERROR_MESSAGES = {
-	NO_AUTH_HEADER: "Falta la cabecera de autorización",
-	INVALID_JWT: "No tienes un JWT válido",
-	SESSION_INVALID: "Sesión no válida",
-};
+import errors from "@lib/customErrors";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 function isUser(user: any): user is UserPayload {
@@ -20,33 +15,32 @@ function isUser(user: any): user is UserPayload {
 	);
 }
 
-const checkAuth = (req: RequestJWT, res: Response, next: NextFunction) => {
+const sessionAuth = (req: RequestJWT, _res: Response, next: NextFunction) => {
+	console.log("pasando por el middleware de auth");
+
 	try {
-		const authHeader = req.headers.authorization;
-		const authCookie = req.cookies.token;
+		const authHeader = req.headers.authorization || "";
+		const authCookie = req.cookies.token || "";
 		console.log(`Auth Header: ${authHeader}`);
 		console.log(`Cookie: ${authCookie}`);
-		let token: string;
-		if (!authCookie) {
-			if (!authHeader || !authHeader.startsWith("Bearer ")) {
-				return res.status(401).send(ERROR_MESSAGES.NO_AUTH_HEADER);
-			}
-			token = authHeader.split(" ")[1];
+		if ((!authCookie && !authHeader) || !authHeader.startsWith("Bearer ")) {
+			throw errors.authorization_failed.withDetails(
+				"Falta un metodo de autorización",
+			);
 		}
-		token = authCookie;
+
+		const token = authCookie || authHeader.split(" ")[1];
 
 		const userPayload = verifyToken(token);
 		if (!isUser(userPayload)) {
-			return res.status(401).send(ERROR_MESSAGES.INVALID_JWT);
+			throw errors.authentication_failed.withDetails("No tiene un JWT valido");
 		}
 
 		req.user = userPayload;
 		return next();
 	} catch (error) {
-		console.error("Error en el middleware de autorización", error);
-
-		res.status(400).send(ERROR_MESSAGES.SESSION_INVALID);
+		next(error);
 	}
 };
 
-export { checkAuth };
+export { sessionAuth };

@@ -36,6 +36,8 @@ const postMentorship = async (
 	next: NextFunction,
 ) => {
 	try {
+		console.log("Pasando por el controlador de crear mentoria");
+
 		const { body } = PostMentorship.parse({ body: req.body });
 		const newMentorship = await MentorshipService.createMentorship(body);
 		const sendMentorship = {

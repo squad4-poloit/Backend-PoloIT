@@ -5,7 +5,6 @@ import {
 	updateUser,
 	deleteUser,
 } from "@controllers/users.controller";
-import { checkAuth } from "@middlewares/session.middleware";
 
 const router = Router();
 
@@ -102,7 +101,7 @@ const router = Router();
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/", checkAuth, getUsers);
+router.get("/", getUsers);
 
 /**
  * @swagger
