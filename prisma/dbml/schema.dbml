@@ -37,10 +37,10 @@ Table Mentorship {
   title String [not null]
   description String [not null]
   student_spots Int [not null]
-  status String [not null]
-  tags String
+  mentor_spots Int [not null, default: 1]
+  status EstadoMentoria [not null, default: 'PENDIENTE']
   start_date DateTime [not null]
-  end_date DateTime
+  end_date DateTime [not null]
   create_at DateTime [default: `now()`, not null]
   update_at DateTime [not null]
 }
@@ -50,7 +50,7 @@ Table UserOnMentorship {
   userId String [not null]
   mentorshipId Int [not null]
   grade Int
-  create_at DateTime [default: `now()`, not null]
+  assign_at DateTime [default: `now()`, not null]
   update_at DateTime [not null]
 
   indexes {
@@ -79,10 +79,26 @@ Table SkillToUser {
   usersId String [ref: > User.id]
 }
 
+Table MentorshipToSkill {
+  tagsId Int [ref: > Skill.id]
+  mentorshipsId Int [ref: > Mentorship.id]
+}
+
 Enum TypeInstitution {
   POLO_IT
   ONG
   EMPRESA
+}
+
+Enum EstadoMentoria {
+  PENDIENTE
+  ACEPTADA
+  PROGRAMADA
+  EN_PROGRESO
+  COMPLETADA
+  CANCELADA
+  RECHAZADA
+  REAGENDADA
 }
 
 Ref: User.roleId > Role.id

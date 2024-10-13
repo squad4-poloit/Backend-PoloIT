@@ -25,8 +25,10 @@ app.get("/", (_req, res) => {
 app.use("/api/documentation", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 app.listen(PORT, () => {
-	console.log(`
-🚀 Server ${NODE_ENV} ready in at: http://localhost:${PORT}/api/documentation`);
+	console.log(`🚀 Server ${NODE_ENV} ready in at: http://localhost:${PORT}/`);
+	console.log(
+		`🚀 Server Documentation ${NODE_ENV} ready in at: http://localhost:${PORT}/api/documentation`,
+	);
 });
 
 export default app;

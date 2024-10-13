@@ -19,10 +19,10 @@
     "prisma-migrate:dev": "dotenv -e .env.dev -- prisma migrate dev --schema ./prisma/schema.prisma",
     "prisma-reset:local": "dotenv -e .env.local --  prisma migrate reset --schema ./prisma/local/schema.local.prisma",
     "prisma-reset:dev": "dotenv -e .env.dev --  prisma migrate reset",
-    "prisma-studio:prod": "dotenv -e .env -- prisma studio --schema ./prisma/local/schema.local.prisma",
-    "prisma-studio:dev": "dotenv -e .env.dev -- prisma studio --schema ./prisma/local/schema.local.prisma",
+    "prisma-studio:prod": "dotenv -e .env -- prisma studio",
+    "prisma-studio:dev": "dotenv -e .env.dev -- prisma studio",
     "prisma-studio:local": "dotenv -e .env.local -- prisma studio --schema ./prisma/local/schema.local.prisma",
-    "prisma-studio:test": "dotenv -e .env.test -- prisma studio --schema ./prisma/local/schema.local.prisma"
+    "prisma-studio:test": "dotenv -e .env.test -- prisma studio"
   },
   "keywords": [],
   "author": "",

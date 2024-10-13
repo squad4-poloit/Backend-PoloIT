@@ -1,5 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import MentorshipService from "@services/mentorships.service";
+import { PostMentorship } from "@schemas/mentorship.schema";
+import { formatDateToString } from "@utils/date";
 
 const getMentorships = async (
 	_req: Request,
@@ -34,9 +36,20 @@ const postMentorship = async (
 	next: NextFunction,
 ) => {
 	try {
-		const mentorship = req.body;
-		const newMentorship = await MentorshipService.createMentorship(mentorship);
-		res.status(200).json({ status: "200", data: newMentorship });
+		const { body } = PostMentorship.parse({ body: req.body });
+		const newMentorship = await MentorshipService.createMentorship(body);
+		const sendMentorship = {
+			id: newMentorship.id,
+			title: newMentorship.title,
+			description: newMentorship.description,
+			status: newMentorship.status,
+			student_spots: newMentorship.student_spots,
+			mentor_spots: newMentorship.mentor_spots,
+			start_date: formatDateToString(newMentorship.start_date),
+			end_date: formatDateToString(newMentorship.start_date),
+		};
+
+		res.status(200).json({ status: "200", data: sendMentorship });
 	} catch (error) {
 		next(error);
 	}

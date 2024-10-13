@@ -1,4 +1,9 @@
-import { PrismaClient, type Skill } from "@prisma/client";
+import {
+	PrismaClient,
+	type User,
+	type UserOnMentorship,
+	type Skill,
+} from "@prisma/client";
 const prisma = new PrismaClient();
 async function main() {
 	console.log("🚀 Creando Permisos....\n");
@@ -364,44 +369,7 @@ async function main() {
 
 	console.log({ users });
 
-	console.log("🚀 Creando Mentorias....\n");
-
-	const mentorship_1 = await prisma.mentorship.create({
-		data: {
-			title: "Desarrollo Fullstack",
-			description: "Una mentoría para aprender desarrollo web fullstack.",
-			student_spots: 5,
-			status: "Disponible",
-			tags: "JavaScript, Node.js, React",
-			start_date: new Date("2023-10-01"),
-		},
-	});
-
-	const mentorship_2 = await prisma.mentorship.create({
-		data: {
-			title: "Análisis de Datos",
-			description: "Una mentoría sobre análisis de datos y visualización.",
-			student_spots: 3,
-			status: "Disponible",
-			tags: "Python, SQL, Tableau",
-			start_date: new Date("2023-11-01"),
-		},
-	});
-
-	console.log({ mentorship_1, mentorship_2 });
-
-	const users_connect_mentorship = await prisma.userOnMentorship.create({
-		data: {
-			user: {
-				connect: { id: users[1].id },
-			},
-			mentorship: {
-				connect: { id: mentorship_1.id },
-			},
-		},
-	});
-
-	console.log({ users_connect_mentorship });
+	console.log("🚀 Asignando Skills a los usuarios...");
 
 	const randomListSkills = (skills: Skill[]) => {
 		const shuffledSkills = skills.sort(() => Math.random() - 0.5);
@@ -415,8 +383,7 @@ async function main() {
 			.slice(0, randomCount)
 			.map((skill) => ({ id: skill.id }));
 	};
-
-	const userAssignSkills = (id: string) => {
+	const assignSkills = (id: string) => {
 		const request = {
 			where: { id },
 			data: {
@@ -431,12 +398,135 @@ async function main() {
 
 		return request;
 	};
-	console.log("🚀 Asignando Skills a los usuarios");
+	const assignTags = (id: number) => {
+		const request = {
+			where: { id },
+			data: {
+				tags: {
+					connect: randomListSkills(skills),
+				},
+			},
+			include: {
+				tags: true,
+			},
+		};
+
+		return request;
+	};
 
 	for (const user of users) {
-		const updatedUser = await prisma.user.update(userAssignSkills(user.id));
+		const updatedUser = await prisma.user.update(assignSkills(user.id));
 		console.log({ updatedUser });
 	}
+
+	console.log("🚀 Creando Mentorias....\n");
+
+	const mentorships = await prisma.mentorship.createManyAndReturn({
+		data: [
+			{
+				title: "Desarrollo Fullstack",
+				description: "Una mentoría para aprender desarrollo web fullstack.",
+				student_spots: 5,
+				status: "PENDIENTE",
+				start_date: new Date("2023-10-01"),
+				end_date: new Date("2023-11-01"),
+			},
+			{
+				title: "Análisis de Datos",
+				description: "Una mentoría sobre análisis de datos y visualización.",
+				student_spots: 10,
+				mentor_spots: 2,
+				status: "PENDIENTE",
+				start_date: new Date("2023-11-01"),
+				end_date: new Date("2023-12-01"),
+			},
+			{
+				title: "Introducción a la Inteligencia Artificial",
+				description:
+					"Mentoría sobre los conceptos básicos de IA y aprendizaje automático.",
+				student_spots: 4,
+				status: "PENDIENTE",
+				start_date: new Date("2023-12-01"),
+				end_date: new Date("2023-12-20"),
+			},
+			{
+				title: "Desarrollo de Aplicaciones Móviles",
+				description:
+					"Una mentoría para aprender a desarrollar aplicaciones móviles.",
+				student_spots: 20,
+				mentor_spots: 3,
+				status: "PENDIENTE",
+				start_date: new Date("2023-12-15"),
+				end_date: new Date("2023-12-30"),
+			},
+		],
+	});
+
+	console.log({ mentorships });
+
+	console.log("🚀 Asignando tags a las mentorias...");
+
+	for (const mentorship of mentorships) {
+		const updatedMentorship = await prisma.mentorship.update(
+			assignTags(mentorship.id),
+		);
+		console.log({ updatedMentorship });
+	}
+
+	console.log("🚀 Asignando mentores y egresados a  mentorias....\n");
+
+	const randomListUser = (users: User[], spots: number) => {
+		const shuffledUsers = users.sort(() => Math.random() - 0.5);
+
+		const randomCount = Math.min(
+			Math.floor(Math.random() * spots) + 1,
+			users.length,
+		);
+
+		return shuffledUsers.slice(0, randomCount).map((user) => ({ id: user.id }));
+	};
+
+	const connectUserMentorship = (idUser: string, idMentorship: number) => {
+		const query = {
+			data: {
+				user: {
+					connect: { id: idUser },
+				},
+				mentorship: {
+					connect: { id: idMentorship },
+				},
+			},
+		};
+		return query;
+	};
+	const usersMentor = users.filter((user) => user.roleId === role_mentor.id);
+	const usersEgresado = users.filter(
+		(user) => user.roleId === role_egresado.id,
+	);
+	// biome-ignore lint/style/useConst: <explanation>
+	let usersOnMentorship: UserOnMentorship[] = [];
+	for (const mentorship of mentorships) {
+		const randomMentors = randomListUser(usersMentor, mentorship.mentor_spots);
+		for (const mentor of randomMentors) {
+			const res = await prisma.userOnMentorship.create(
+				connectUserMentorship(mentor.id, mentorship.id),
+			);
+			usersOnMentorship.push(res);
+		}
+
+		const randomStudents = randomListUser(
+			usersEgresado,
+			mentorship.student_spots,
+		);
+		for (const student of randomStudents) {
+			const res = await prisma.userOnMentorship.create(
+				connectUserMentorship(student.id, mentorship.id),
+			);
+			usersOnMentorship.push(res);
+		}
+	}
+
+	console.log({ usersOnMentorship });
 }
 
 main()

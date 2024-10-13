@@ -1,6 +1,7 @@
 import prisma from "@database/client";
 import type { Mentorship } from "@prisma/client";
 import errors from "@lib/customErrors";
+import type { PostMentorshipType } from "@schemas/mentorship.schema";
 
 const selectMentorship = {
 	id: true,
@@ -8,6 +9,7 @@ const selectMentorship = {
 	description: true,
 	status: true,
 	student_spots: true,
+	mentor_spots: true,
 	start_date: true,
 	end_date: true,
 };
@@ -45,7 +47,7 @@ const getMentorship = async (id: number) => {
 	return mentorship;
 };
 
-const createMentorship = async (mentorship: Mentorship) => {
+const createMentorship = async (mentorship: PostMentorshipType["body"]) => {
 	const newMentorship = await prisma.mentorship.create({
 		data: { ...mentorship },
 		select: selectMentorship,
@@ -84,7 +86,6 @@ const deleteMentorship = async (id: number) => {
 };
 
 const addUserToMentorship = async (userId: string, mentorshipId: number) => {
-	//TODO a
 	const userOnMentorship = await prisma.userOnMentorship.create({
 		data: {
 			user: {
