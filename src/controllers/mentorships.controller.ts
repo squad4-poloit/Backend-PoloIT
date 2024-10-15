@@ -1,7 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import MentorshipService from "@services/mentorships.service";
-import { PostMentorship } from "@schemas/mentorship.schema";
+import {
+	PostMentorship,
+	PostUserToMentorshipSchema,
+} from "@schemas/mentorship.schema";
 import { formatDateToString } from "@utils/date";
+import type { RequestJWT } from "@interfaces/auth.interface";
 
 const getMentorships = async (
 	_req: Request,
@@ -31,7 +35,7 @@ const getMentorship = async (
 };
 
 const postMentorship = async (
-	req: Request,
+	req: RequestJWT,
 	res: Response,
 	next: NextFunction,
 ) => {
@@ -40,15 +44,11 @@ const postMentorship = async (
 
 		const { body } = PostMentorship.parse({ body: req.body });
 		const newMentorship = await MentorshipService.createMentorship(body);
+		const { start_date, end_date, ...rest } = newMentorship;
 		const sendMentorship = {
-			id: newMentorship.id,
-			title: newMentorship.title,
-			description: newMentorship.description,
-			status: newMentorship.status,
-			student_spots: newMentorship.student_spots,
-			mentor_spots: newMentorship.mentor_spots,
-			start_date: formatDateToString(newMentorship.start_date),
-			end_date: formatDateToString(newMentorship.start_date),
+			...rest,
+			start_date: formatDateToString(start_date),
+			end_date: formatDateToString(end_date),
 		};
 
 		res.status(200).json({ status: "200", data: sendMentorship });
@@ -94,11 +94,16 @@ const postUserToMentorship = async (
 	next: NextFunction,
 ) => {
 	try {
-		const userId = req.body.userId;
-		const mentorshipId = Number(req.params.id);
+		const { body, params } = PostUserToMentorshipSchema.parse({
+			body: req.body,
+			params: {
+				mentorship_id: req.params.id,
+			},
+		});
+
 		const resQuery = await MentorshipService.addUserToMentorship(
-			userId,
-			mentorshipId,
+			body.user_id,
+			params.mentorship_id,
 		);
 		res.status(200).json({ status: "200", data: resQuery });
 	} catch (error) {

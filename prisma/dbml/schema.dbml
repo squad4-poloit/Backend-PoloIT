@@ -36,6 +36,8 @@ Table Mentorship {
   id Int [pk, increment]
   title String [not null]
   description String [not null]
+  max_student_spots Int [not null]
+  max_mentor_spots Int [not null, default: 1]
   student_spots Int [not null]
   mentor_spots Int [not null, default: 1]
   status EstadoMentoria [not null, default: 'PENDIENTE']

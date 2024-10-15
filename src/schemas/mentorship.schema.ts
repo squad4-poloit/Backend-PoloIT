@@ -53,7 +53,7 @@ export const PostMentorship = z.object({
 				.positive({
 					message: "El cupo de mentores debe ser un número positivo.",
 				})
-				.optional(),
+				.default(1),
 			start_date: z
 				.string()
 				.date()
@@ -74,6 +74,13 @@ export const PutMentorship = z.object({});
 
 export const DeleteMentorship = z.object({});
 
-export const PostUserToMentorship = z.object({});
+export const PostUserToMentorshipSchema = z.object({
+	body: z.object({
+		user_id: z.string().uuid(),
+	}),
+	params: z.object({
+		mentorship_id: z.coerce.number().int().min(0),
+	}),
+});
 
 export type PostMentorshipType = z.infer<typeof PostMentorship>;

@@ -25,8 +25,4 @@ export const GetUserSchema = z.object({
 	}),
 });
 
-export const PostUserSchema = z.object({
-	body: z.object({}),
-});
-
 export type GetUsersType = z.infer<typeof GetUsersSchema>;

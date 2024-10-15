@@ -38,6 +38,22 @@ const selectUser = {
 	},
 };
 
+const getRoleUser = async (id: string) => {
+	const role = await prisma.user.findUniqueOrThrow({
+		where: { id },
+		select: {
+			role: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+		},
+	});
+
+	return role;
+};
+
 const getTotalUsers = async () => {
 	const total = await prisma.user.count();
 	return total;
@@ -136,4 +152,5 @@ export default {
 	updateUser,
 	deleteUser,
 	getTotalUsers,
+	getRoleUser,
 };

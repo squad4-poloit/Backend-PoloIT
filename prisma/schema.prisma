@@ -54,18 +54,20 @@ model User {
 }
 
 model Mentorship {
-  id            Int                @id @default(autoincrement())
-  title         String
-  description   String
-  student_spots Int
-  mentor_spots  Int                @default(1)
-  status        EstadoMentoria     @default(PENDIENTE)
-  tags          Skill[]
-  start_date    DateTime
-  end_date      DateTime
-  create_at     DateTime           @default(now())
-  update_at     DateTime           @updatedAt
-  users         UserOnMentorship[]
+  id                Int                @id @default(autoincrement())
+  title             String
+  description       String
+  max_student_spots Int
+  max_mentor_spots  Int                @default(1)
+  student_spots     Int
+  mentor_spots      Int                @default(1)
+  status            EstadoMentoria     @default(PENDIENTE)
+  tags              Skill[]
+  start_date        DateTime
+  end_date          DateTime
+  create_at         DateTime           @default(now())
+  update_at         DateTime           @updatedAt
+  users             UserOnMentorship[]
 }
 
 model UserOnMentorship {
