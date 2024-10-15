@@ -47,10 +47,11 @@ model User {
   create_at     DateTime @default(now())
   update_at     DateTime @updatedAt
 
-  role        Role               @relation(fields: [roleId], references: [id])
-  institution Institution        @relation(fields: [institutionId], references: [id])
-  skills      Skill[]
-  mentorships UserOnMentorship[]
+  role          Role               @relation(fields: [roleId], references: [id])
+  institution   Institution        @relation(fields: [institutionId], references: [id])
+  skills        Skill[]
+  mentorships   UserOnMentorship[]
+  notifications Notification[]
 }
 
 model Mentorship {
@@ -97,6 +98,15 @@ model Skill {
   name        String       @unique
   users       User[]
   mentorships Mentorship[]
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  message   String
+  userId    String
+  read      Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum TypeInstitution {

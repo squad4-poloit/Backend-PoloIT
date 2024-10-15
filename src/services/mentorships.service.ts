@@ -2,6 +2,7 @@ import prisma from "@database/client";
 import type { Mentorship } from "@prisma/client";
 import errors from "@lib/customErrors";
 import type { PostMentorshipType } from "@schemas/mentorship.schema";
+import { createNotification } from "./notification.service";
 
 const selectMentorship = {
 	id: true,
@@ -114,20 +115,20 @@ const addUserToMentorship = async (user_id: string, mentorship_id: number) => {
 
 	const mentorship = await prisma.mentorship.findUnique({
 		where: { id: mentorship_id },
-		select: {
-			id: true,
-			max_mentor_spots: true,
-			max_student_spots: true,
-			mentor_spots: true,
-			student_spots: true,
-			status: true,
-		},
+		include: { users: true },
 	});
 
 	if (!mentorship) {
 		throw errors.not_found.withDetails(
 			"No se ha encontrado una mentoria con el ID proporcionado.",
 		);
+	}
+
+	const isUserAlreadyInMentorship = mentorship.users.some(
+		(user) => user.userId === user_id,
+	);
+	if (isUserAlreadyInMentorship) {
+		throw errors.conflict.withDetails("El usuario ya existe en la mentoria");
 	}
 
 	// TODO: validar los estados disponibles para agregar usuarios a mentorias
@@ -144,6 +145,8 @@ const addUserToMentorship = async (user_id: string, mentorship_id: number) => {
 			},
 		},
 	});
+	const message = `You have been invited to the mentorship: ${mentorship.title}`;
+	await createNotification(user_id, message);
 
 	return userOnMentorship;
 };
