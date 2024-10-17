@@ -1,5 +1,5 @@
 import prisma from "@database/client";
-import type { Mentorship } from "@prisma/client";
+import type { EstadoMentoria, Mentorship } from "@prisma/client";
 import errors from "@lib/customErrors";
 import type { PostMentorshipType } from "@schemas/mentorship.schema";
 import { createNotification } from "./notification.service";
@@ -94,9 +94,62 @@ const deleteMentorship = async (id: number) => {
 	return deletedMentorship;
 };
 
-const addUserToMentorship = async (user_id: string, mentorship_id: number) => {
+const updatedMentorshipSpots = async (
+	mentorshipId: number,
+	opStudent = true,
+	opInc = true,
+) => {
+	const mentorship = await prisma.mentorship.findFirstOrThrow({
+		where: { id: mentorshipId },
+	});
+
+	let updatedField = {};
+
+	if (opStudent) {
+		if (opInc && mentorship.student_spots >= mentorship.max_student_spots) {
+			throw errors.conflict.withDetails(
+				"No se puede aumentar el cupo disponible de estudiantes, se ha alcanzado el máximo permitido.",
+			);
+		}
+
+		if (!opInc && mentorship.student_spots <= 0) {
+			throw errors.conflict.withDetails(
+				"No se puede disminuir el cupo disponible de estudiantes, se ha completado el cupo disponible",
+			);
+		}
+		mentorship.student_spots = opInc
+			? mentorship.student_spots + 1
+			: mentorship.student_spots - 1;
+		updatedField = { student_spots: mentorship.student_spots };
+	} else {
+		if (opInc && mentorship.mentor_spots >= mentorship.max_mentor_spots) {
+			throw errors.conflict.withDetails(
+				"No se puede aumentar el cupo disponible de mentores, se ha alcanzado el máximo permitido.",
+			);
+		}
+
+		if (!opInc && mentorship.mentor_spots <= 0) {
+			throw errors.conflict.withDetails(
+				"No se puede dismuir el cupo disponible de mentores, se ha completado el cupo disponible",
+			);
+		}
+		mentorship.mentor_spots = opInc
+			? mentorship.mentor_spots + 1
+			: mentorship.mentor_spots - 1;
+		updatedField = { mentor_spots: mentorship.mentor_spots };
+	}
+
+	const updatedMentorship = await prisma.mentorship.update({
+		where: { id: mentorshipId },
+		data: updatedField,
+	});
+
+	return updatedMentorship;
+};
+
+const addUserToMentorship = async (userId: string, mentorshipId: number) => {
 	const user = await prisma.user.findUnique({
-		where: { id: user_id },
+		where: { id: userId },
 		select: {
 			id: true,
 			role: {
@@ -107,6 +160,7 @@ const addUserToMentorship = async (user_id: string, mentorship_id: number) => {
 			},
 		},
 	});
+
 	if (!user) {
 		throw errors.not_found.withDetails(
 			"No se ha encontrado un usuario con el ID proporcionado.",
@@ -114,7 +168,7 @@ const addUserToMentorship = async (user_id: string, mentorship_id: number) => {
 	}
 
 	const mentorship = await prisma.mentorship.findUnique({
-		where: { id: mentorship_id },
+		where: { id: mentorshipId },
 		include: { users: true },
 	});
 
@@ -123,32 +177,93 @@ const addUserToMentorship = async (user_id: string, mentorship_id: number) => {
 			"No se ha encontrado una mentoria con el ID proporcionado.",
 		);
 	}
+	const enabledStatus: EstadoMentoria[] = [
+		"PENDIENTE",
+		"PROGRAMADA",
+		"ACEPTADA",
+		"EN_PROGRESO",
+	];
+
+	if (!enabledStatus.includes(mentorship.status)) {
+		throw errors.conflict.withDetails(
+			`No se permite agregar mas usuario a la mentoria en el estado: ${mentorship.status}`,
+		);
+	}
 
 	const isUserAlreadyInMentorship = mentorship.users.some(
-		(user) => user.userId === user_id,
+		(user) => user.userId === userId,
 	);
+
 	if (isUserAlreadyInMentorship) {
 		throw errors.conflict.withDetails("El usuario ya existe en la mentoria");
 	}
 
-	// TODO: validar los estados disponibles para agregar usuarios a mentorias
-	// TODO: validar el cupo de mentores y alumnos
-	// TODO: actualizar el valor del cupo de alumnos o mentores
-
 	const userOnMentorship = await prisma.userOnMentorship.create({
 		data: {
 			user: {
-				connect: { id: user_id },
+				connect: { id: userId },
 			},
 			mentorship: {
-				connect: { id: mentorship_id },
+				connect: { id: mentorshipId },
 			},
 		},
 	});
-	const message = `You have been invited to the mentorship: ${mentorship.title}`;
-	await createNotification(user_id, message);
+
+	await updatedMentorshipSpots(mentorshipId);
+
+	const message = `Ha sido invitado a la mentoria: ${mentorship.title}`;
+	await createNotification(userId, message);
 
 	return userOnMentorship;
+};
+
+const updateMentorshipStatus = async (
+	mentorshipId: number,
+	newStatus: EstadoMentoria,
+) => {
+	const updatedMentorship = await prisma.mentorship.update({
+		where: { id: mentorshipId },
+		data: {
+			status: newStatus,
+		},
+	});
+	return updatedMentorship;
+};
+
+const getMentorshipsByUserId = async (userId: string) => {
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		include: {
+			mentorships: true,
+		},
+	});
+	if (!user) {
+		throw errors.not_found.withDetails(
+			"No se encontro un usuario con el ID proporcionado.",
+		);
+	}
+
+	const userHasMentorships = user.mentorships.some(
+		(mentorship) => mentorship.userId === userId,
+	);
+	if (!userHasMentorships) {
+		throw errors.not_found.withDetails(
+			"No se encontraron mentorias para el usuario",
+		);
+	}
+
+	const userMentorships = await prisma.userOnMentorship.findMany({
+		where: { userId },
+		select: {
+			mentorship: {
+				select: selectMentorship,
+			},
+		},
+	});
+
+	return userMentorships;
 };
 
 export default {
@@ -159,4 +274,6 @@ export default {
 	deleteMentorship,
 	getTotalMentorships,
 	addUserToMentorship,
+	getMentorshipsByUserId,
+	updateMentorshipStatus,
 };

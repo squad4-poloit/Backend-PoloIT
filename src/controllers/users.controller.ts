@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import UserService from "@services/users.service";
 import { GetUserSchema, GetUsersSchema } from "@schemas/users.schema";
+import MentorshipService from "@services/mentorships.service";
 
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -81,4 +82,20 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
-export { getUsers, getUser, updateUser, deleteUser };
+const getUserMentorships = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	const userId = req.params.id;
+	try {
+		const userMentorships =
+			await MentorshipService.getMentorshipsByUserId(userId);
+
+		res.status(200).json({ status: "200", data: { userMentorships } });
+	} catch (error) {
+		next(error);
+	}
+};
+
+export { getUsers, getUser, updateUser, deleteUser, getUserMentorships };

@@ -4,6 +4,7 @@ import {
 	getUser,
 	updateUser,
 	deleteUser,
+	getUserMentorships,
 } from "@controllers/users.controller";
 
 const router = Router();
@@ -102,6 +103,7 @@ const router = Router();
  *         description: Error interno del servidor
  */
 router.get("/", getUsers);
+router.get("/:id/mentorships", getUserMentorships);
 
 /**
  * @swagger
