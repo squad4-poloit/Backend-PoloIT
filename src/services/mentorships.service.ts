@@ -50,6 +50,8 @@ const getMentorship = async (id: number) => {
 
 const createMentorship = async (mentorship: PostMentorshipType["body"]) => {
 	const { mentor_spots, student_spots, ...rest } = mentorship;
+	console.log("Running createMentorship:");
+	console.log({ mentorship });
 
 	const newMentorship = await prisma.mentorship.create({
 		data: {

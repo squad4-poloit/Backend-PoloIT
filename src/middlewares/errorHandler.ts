@@ -37,6 +37,12 @@ const handlePrismaError = (error: PrismaClientKnownRequestError) => {
 	}
 };
 
+const handleJsonError = (error: SyntaxError) => {
+	return new ApiError(400, "SYNTAX_ERROR", error.message).withDetails(
+		"Json mal formado",
+	);
+};
+
 // Manejador de errores general
 export const errorHandler = (
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -59,6 +65,10 @@ export const errorHandler = (
 	// Si es un error de Prisma, lo transformamos en ApiError
 	else if (error instanceof PrismaClientKnownRequestError) {
 		customError = handlePrismaError(error);
+	}
+	// Verifica si es un error de sintaxis relacionado con el JSON mal formateado
+	else if (error instanceof SyntaxError && "body" in error) {
+		customError = handleJsonError(error);
 	}
 	// Para cualquier otro error, generamos un error genérico
 	else {
