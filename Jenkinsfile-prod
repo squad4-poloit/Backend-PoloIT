@@ -1,11 +1,11 @@
 pipeline {
     agent any
     environment {
-        NETWORK_NAME = "polo_net",
-        DB_USER = "postgres",
-        DB_PASSWORD = "admin",
-        DB_NAME = "BackPoloIT",
-        NODE_PORT = "3030",
+        NETWORK_NAME = "polo_net"
+        DB_USER = "postgres"
+        DB_PASSWORD = "admin"
+        DB_NAME = "BackPoloIT"
+        NODE_PORT = "3030"
         NETWORK_NAME = "polo_net"
     }
     stages {
