@@ -6,8 +6,8 @@ services:
     environment:
       - NODE_ENV=production
     ports:
-      - ${NODE_PORT}:3030
+      - 3030:3030
     networks:
-     - ${NETWORK_NAME}
+     - polo_net
 
     command: ["npm","run","start"]
