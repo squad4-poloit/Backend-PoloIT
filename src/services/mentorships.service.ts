@@ -39,6 +39,23 @@ const getListMentorships = async () => {
 };
 
 const getMentorship = async (id: number) => {
+	console.log("Running getMentorship:");
+
+	const res = await prisma.mentorship.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			users: {
+				include: {
+					user: true,
+				},
+			},
+		},
+	});
+	console.log({ mentorship: res });
+	console.log({ users: res?.users });
+
 	const mentorship = await prisma.mentorship.findUnique({
 		where: {
 			id,
@@ -99,7 +116,7 @@ const deleteMentorship = async (id: number) => {
 const updatedMentorshipSpots = async (
 	mentorshipId: number,
 	opStudent = true,
-	opInc = true,
+	opInc = false,
 ) => {
 	const mentorship = await prisma.mentorship.findFirstOrThrow({
 		where: { id: mentorshipId },
@@ -108,15 +125,15 @@ const updatedMentorshipSpots = async (
 	let updatedField = {};
 
 	if (opStudent) {
-		if (opInc && mentorship.student_spots >= mentorship.max_student_spots) {
+		if (!opInc && mentorship.student_spots <= 0) {
 			throw errors.conflict.withDetails(
-				"No se puede aumentar el cupo disponible de estudiantes, se ha alcanzado el máximo permitido.",
+				"No se pueden agregar mas estudiantes, se ha alcanzado el cupo disponible.",
 			);
 		}
 
-		if (!opInc && mentorship.student_spots <= 0) {
+		if (opInc && mentorship.student_spots >= mentorship.max_student_spots) {
 			throw errors.conflict.withDetails(
-				"No se puede disminuir el cupo disponible de estudiantes, se ha completado el cupo disponible",
+				"No se pueden quitar mas estudiantes, se ha alcanzado el cupo máximo",
 			);
 		}
 		mentorship.student_spots = opInc
@@ -124,15 +141,15 @@ const updatedMentorshipSpots = async (
 			: mentorship.student_spots - 1;
 		updatedField = { student_spots: mentorship.student_spots };
 	} else {
-		if (opInc && mentorship.mentor_spots >= mentorship.max_mentor_spots) {
+		if (!opInc && mentorship.mentor_spots <= 0) {
 			throw errors.conflict.withDetails(
-				"No se puede aumentar el cupo disponible de mentores, se ha alcanzado el máximo permitido.",
+				"No se pueden agregar mas mentores, se ha alcanzado el cupo disponible.",
 			);
 		}
 
-		if (!opInc && mentorship.mentor_spots <= 0) {
+		if (opInc && mentorship.mentor_spots >= mentorship.max_mentor_spots) {
 			throw errors.conflict.withDetails(
-				"No se puede dismuir el cupo disponible de mentores, se ha completado el cupo disponible",
+				"No se pueden quitar mas mentores, se ha alcanzado el cupo máximo",
 			);
 		}
 		mentorship.mentor_spots = opInc
@@ -199,6 +216,8 @@ const addUserToMentorship = async (userId: string, mentorshipId: number) => {
 	if (isUserAlreadyInMentorship) {
 		throw errors.conflict.withDetails("El usuario ya existe en la mentoria");
 	}
+	const isStudent = user.role.name === "EGRESADO";
+	await updatedMentorshipSpots(mentorshipId, isStudent);
 
 	const userOnMentorship = await prisma.userOnMentorship.create({
 		data: {
@@ -210,8 +229,6 @@ const addUserToMentorship = async (userId: string, mentorshipId: number) => {
 			},
 		},
 	});
-
-	await updatedMentorshipSpots(mentorshipId);
 
 	const message = `Ha sido invitado a la mentoria: ${mentorship.title}`;
 	await createNotification(userId, message);

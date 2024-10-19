@@ -105,7 +105,11 @@ const postUserToMentorship = async (
 			body.user_id,
 			params.mentorship_id,
 		);
-		res.status(200).json({ status: "200", data: resQuery });
+		res.status(200).json({
+			status: "200",
+			message: "Se agrego el usuario a la mentoria con exito",
+			data: resQuery,
+		});
 	} catch (error) {
 		next(error);
 	}
