@@ -7,5 +7,23 @@ services:
       - NODE_ENV=production
     ports:
       - 3030:3030
+    depends_on: db
 
-    command: ["npm","run","start"]
+   db:
+    env_file: ".env"
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=BackPoloIT
+      - NODE_ENV=production
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:   
+
+command: ["npm","run","start"]
