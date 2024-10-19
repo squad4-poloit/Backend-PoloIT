@@ -28,7 +28,13 @@ const getMentorship = async (
 	try {
 		const mentorship_id = Number(req.params.id);
 		const mentorship = await MentorshipService.getMentorship(mentorship_id);
-		res.status(200).json({ status: "200", data: mentorship });
+		const { start_date, end_date, ...rest } = mentorship;
+		const sendMentorship = {
+			...rest,
+			start_date: formatDateToString(start_date),
+			end_date: formatDateToString(end_date),
+		};
+		res.status(200).json({ status: "200", data: sendMentorship });
 	} catch (error) {
 		next(error);
 	}
@@ -69,7 +75,14 @@ const updateMentorship = async (
 			mentorship_id,
 			mentorship,
 		);
-		res.status(200).json({ status: "200", data: updatedMentorship });
+		const { start_date, end_date, ...rest } = updatedMentorship;
+		const sendMentorship = {
+			...rest,
+			start_date: formatDateToString(start_date),
+			end_date: formatDateToString(end_date),
+		};
+
+		res.status(200).json({ status: "200", data: sendMentorship });
 	} catch (error) {
 		next(error);
 	}
@@ -82,6 +95,7 @@ const deleteMentorship = async (
 	try {
 		const mentorship_id = Number(req.params.id);
 		const deletedMentorship = MentorshipService.deleteMentorship(mentorship_id);
+
 		res.status(200).json({ status: "200", data: deletedMentorship });
 	} catch (error) {
 		next(error);
@@ -105,10 +119,17 @@ const postUserToMentorship = async (
 			body.user_id,
 			params.mentorship_id,
 		);
+		const { assign_at, update_at, ...rest } = resQuery;
+		const sendMentorship = {
+			...rest,
+			assign_at: formatDateToString(assign_at),
+			update_at: formatDateToString(update_at),
+		};
+
 		res.status(200).json({
 			status: "200",
 			message: "Se agrego el usuario a la mentoria con exito",
-			data: resQuery,
+			data: sendMentorship,
 		});
 	} catch (error) {
 		next(error);

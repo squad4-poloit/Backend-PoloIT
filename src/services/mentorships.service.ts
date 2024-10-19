@@ -41,22 +41,7 @@ const getListMentorships = async () => {
 const getMentorship = async (id: number) => {
 	console.log("Running getMentorship:");
 
-	const res = await prisma.mentorship.findUnique({
-		where: {
-			id,
-		},
-		include: {
-			users: {
-				include: {
-					user: true,
-				},
-			},
-		},
-	});
-	console.log({ mentorship: res });
-	console.log({ users: res?.users });
-
-	const mentorship = await prisma.mentorship.findUnique({
+	const mentorship = await prisma.mentorship.findUniqueOrThrow({
 		where: {
 			id,
 		},
@@ -89,7 +74,7 @@ const updateMentorship = async (
 ) => {
 	const okMentorship = await isMentorshipExist(id);
 	if (!okMentorship) {
-		throw errors.not_found.withDetails("No se encontro la mentoria");
+		throw errors.not_found.withDetails("No se encontró la mentoria");
 	}
 
 	const updatedMentorship = await prisma.mentorship.update({
@@ -103,7 +88,7 @@ const updateMentorship = async (
 const deleteMentorship = async (id: number) => {
 	const okMentorship = await isMentorshipExist(id);
 	if (!okMentorship) {
-		throw errors.not_found.withDetails("No se encontro la mentoria");
+		throw errors.not_found.withDetails("No se encontró la mentoria");
 	}
 
 	const deletedMentorship = await prisma.mentorship.delete({
@@ -260,7 +245,7 @@ const getMentorshipsByUserId = async (userId: string) => {
 	});
 	if (!user) {
 		throw errors.not_found.withDetails(
-			"No se encontro un usuario con el ID proporcionado.",
+			"No se encontró un usuario con el ID proporcionado.",
 		);
 	}
 
