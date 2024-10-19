@@ -1,15 +1,4 @@
 services:
-  backend_nodejs:
-    env_file: ".env"
-    build: .
-    restart: always
-    environment:
-      - NODE_ENV=production
-    ports:
-      - 3030:3030
-    depends_on: 
-      - db
-        
   db:
     env_file: ".env"
     image: postgres:16-alpine
@@ -23,3 +12,14 @@ services:
       - 5432:5432
     volumes:
       - /home/user/docker/Backend-PoloIT/pgdata:/var/lib/postgresql/data
+      
+  backend_nodejs:
+    env_file: ".env"
+    build: .
+    restart: always
+    environment:
+      - NODE_ENV=production
+    ports:
+      - 3030:3030
+    depends_on: 
+      - db
