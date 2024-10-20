@@ -17,4 +17,4 @@ WORKDIR /home/app
 
 COPY --from=builder /home/node/app ./
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && npm run start"]
