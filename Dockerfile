@@ -6,11 +6,7 @@ COPY package*.json ./
 
 RUN npm ci
 
-RUN chown -R node:node /home/node/app
-
-COPY --chown=node:node . .
-
-USER node
+COPY . .
 
 RUN npx prisma generate
 RUN npx prisma migrate deploy
@@ -21,9 +17,5 @@ FROM node:20.16
 WORKDIR /home/app
 
 COPY --from=builder /home/app ./
-
-RUN chown -R node:node /home/app
-
-USER node
 
 CMD ["npm", "run", "start"]
