@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
-import { type AnyZodObject, ZodError } from "zod";
+import type { AnyZodObject } from "zod";
 
 export const schemaValidation =
 	(schema: AnyZodObject) =>
-	(req: Request, res: Response, next: NextFunction) => {
+	(req: Request, _res: Response, next: NextFunction) => {
 		try {
 			schema.parse({
 				body: req.body,
@@ -13,15 +13,6 @@ export const schemaValidation =
 
 			return next();
 		} catch (error) {
-			console.log(error);
-			if (error instanceof ZodError) {
-				return res.status(400).json(
-					error.issues.map((issue) => ({
-						path: issue.path,
-						message: issue.message,
-					})),
-				);
-			}
-			return res.status(400).json({ message: "internal server error" });
+			next(error);
 		}
 	};

@@ -47,25 +47,28 @@ model User {
   create_at     DateTime @default(now())
   update_at     DateTime @updatedAt
 
-  role        Role               @relation(fields: [roleId], references: [id])
-  institution Institution        @relation(fields: [institutionId], references: [id])
-  skills      Skill[]
-  mentorships UserOnMentorship[]
+  role          Role               @relation(fields: [roleId], references: [id])
+  institution   Institution        @relation(fields: [institutionId], references: [id])
+  skills        Skill[]
+  mentorships   UserOnMentorship[]
+  notifications Notification[]
 }
 
 model Mentorship {
-  id            Int       @id @default(autoincrement())
-  title         String
-  description   String
-  student_spots Int
-  status        String
-  tags          String?
-  start_date    DateTime
-  end_date      DateTime?
-  create_at     DateTime  @default(now())
-  update_at     DateTime  @updatedAt
-
-  users UserOnMentorship[]
+  id                Int                @id @default(autoincrement())
+  title             String
+  description       String
+  max_student_spots Int
+  max_mentor_spots  Int                @default(1)
+  student_spots     Int
+  mentor_spots      Int                @default(1)
+  status            EstadoMentoria     @default(PENDIENTE)
+  tags              Skill[]
+  start_date        DateTime
+  end_date          DateTime
+  create_at         DateTime           @default(now())
+  update_at         DateTime           @updatedAt
+  users             UserOnMentorship[]
 }
 
 model UserOnMentorship {
@@ -73,7 +76,7 @@ model UserOnMentorship {
   userId       String
   mentorshipId Int
   grade        Int?
-  create_at    DateTime @default(now())
+  assign_at    DateTime @default(now())
   update_at    DateTime @updatedAt
 
   user       User       @relation(fields: [userId], references: [id])
@@ -85,19 +88,40 @@ model UserOnMentorship {
 model Institution {
   id   Int             @id @default(autoincrement())
   name String
-  type TypeInstitution @default(POLO_IT)
+  type TypeInstitution
 
   User User[]
 }
 
 model Skill {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  users User[]
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  users       User[]
+  mentorships Mentorship[]
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  message   String
+  userId    String
+  read      Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum TypeInstitution {
   POLO_IT
   ONG
   EMPRESA
+}
+
+enum EstadoMentoria {
+  PENDIENTE
+  ACEPTADA
+  PROGRAMADA
+  EN_PROGRESO
+  COMPLETADA
+  CANCELADA
+  RECHAZADA
+  REAGENDADA
 }

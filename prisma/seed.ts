@@ -1,4 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import {
+	PrismaClient,
+	type User,
+	type UserOnMentorship,
+	type Skill,
+} from "@prisma/client";
 const prisma = new PrismaClient();
 async function main() {
 	console.log("🚀 Creando Permisos....\n");
@@ -116,7 +121,7 @@ async function main() {
 
 	console.log("🚀 Creando Skills....\n");
 
-	const skills = await prisma.skill.createMany({
+	const skills = await prisma.skill.createManyAndReturn({
 		data: [
 			// Lenguajes de Programación
 			{ name: "JavaScript" },
@@ -267,7 +272,7 @@ async function main() {
 				email: "egresado1@company.com",
 				first_name: "Sofia",
 				last_name: "Torres",
-				password: "hashedEgresadoPassword123",
+				password: "password123",
 				phone: "+34901234567",
 				birth_date: new Date("1997-01-23"),
 				linkedIn: "https://www.linkedin.com/in/sofiatorres",
@@ -279,7 +284,7 @@ async function main() {
 				email: "egresado2@company.com",
 				first_name: "Manuel",
 				last_name: "Perez",
-				password: "hashedEgresadoPassword123",
+				password: "password123",
 				phone: "+34965432109",
 				birth_date: new Date("1995-04-12"),
 				linkedIn: "https://www.linkedin.com/in/manuelperez",
@@ -291,7 +296,7 @@ async function main() {
 				email: "egresado3@company.com",
 				first_name: "Carmen",
 				last_name: "Herrera",
-				password: "hashedEgresadoPassword123",
+				password: "password123",
 				phone: "+34983456789",
 				birth_date: new Date("1996-02-19"),
 				linkedIn: "https://www.linkedin.com/in/carmenherrera",
@@ -303,7 +308,7 @@ async function main() {
 				email: "egresado4@company.com",
 				first_name: "Daniel",
 				last_name: "Navarro",
-				password: "hashedEgresadoPassword123",
+				password: "password123",
 				phone: "+34987654321",
 				birth_date: new Date("1998-07-03"),
 				linkedIn: "https://www.linkedin.com/in/danielnavarro",
@@ -315,7 +320,7 @@ async function main() {
 				email: "egresado5@company.com",
 				first_name: "Laura",
 				last_name: "Mendez",
-				password: "hashedEgresadoPassword123",
+				password: "password123",
 				phone: "+34912345678",
 				birth_date: new Date("1996-11-09"),
 				linkedIn: "https://www.linkedin.com/in/lauramendez",
@@ -327,7 +332,7 @@ async function main() {
 				email: "egresado6@company.com",
 				first_name: "Pablo",
 				last_name: "Gil",
-				password: "hashedEgresadoPassword123",
+				password: "password123",
 				phone: "+34981234567",
 				birth_date: new Date("1994-09-01"),
 				linkedIn: "https://www.linkedin.com/in/pablogil",
@@ -339,7 +344,7 @@ async function main() {
 				email: "egresado7@company.com",
 				first_name: "Cristina",
 				last_name: "Ruiz",
-				password: "hashedEgresadoPassword123",
+				password: "password123",
 				phone: "+34976543210",
 				birth_date: new Date("1997-06-29"),
 				linkedIn: "https://www.linkedin.com/in/cristinarruiz",
@@ -351,7 +356,7 @@ async function main() {
 				email: "egresado8@company.com",
 				first_name: "Jorge",
 				last_name: "Serrano",
-				password: "hashedEgresadoPassword123",
+				password: "password123",
 				phone: "+34912345678",
 				birth_date: new Date("1996-12-10"),
 				linkedIn: "https://www.linkedin.com/in/jorgeserrano",
@@ -364,46 +369,166 @@ async function main() {
 
 	console.log({ users });
 
-	console.log({ users });
+	console.log("🚀 Asignando Skills a los usuarios...");
+
+	const randomListSkills = (skills: Skill[]) => {
+		const shuffledSkills = skills.sort(() => Math.random() - 0.5);
+
+		const randomCount = Math.min(
+			Math.floor(Math.random() * 5) + 1,
+			skills.length,
+		);
+
+		return shuffledSkills
+			.slice(0, randomCount)
+			.map((skill) => ({ id: skill.id }));
+	};
+	const assignSkills = (id: string) => {
+		const request = {
+			where: { id },
+			data: {
+				skills: {
+					connect: randomListSkills(skills),
+				},
+			},
+			include: {
+				skills: true,
+			},
+		};
+
+		return request;
+	};
+	const assignTags = (id: number) => {
+		const request = {
+			where: { id },
+			data: {
+				tags: {
+					connect: randomListSkills(skills),
+				},
+			},
+			include: {
+				tags: true,
+			},
+		};
+
+		return request;
+	};
+
+	for (const user of users) {
+		const updatedUser = await prisma.user.update(assignSkills(user.id));
+		console.log({ updatedUser });
+	}
 
 	console.log("🚀 Creando Mentorias....\n");
 
-	const mentorship_1 = await prisma.mentorship.create({
-		data: {
-			title: "Desarrollo Fullstack",
-			description: "Una mentoría para aprender desarrollo web fullstack.",
-			student_spots: 5,
-			status: "Disponible",
-			tags: "JavaScript, Node.js, React",
-			start_date: new Date("2023-10-01"),
-		},
-	});
-
-	const mentorship_2 = await prisma.mentorship.create({
-		data: {
-			title: "Análisis de Datos",
-			description: "Una mentoría sobre análisis de datos y visualización.",
-			student_spots: 3,
-			status: "Disponible",
-			tags: "Python, SQL, Tableau",
-			start_date: new Date("2023-11-01"),
-		},
-	});
-
-	console.log({ mentorship_1, mentorship_2 });
-
-	const users_connect_mentorship = await prisma.userOnMentorship.create({
-		data: {
-			user: {
-				connect: { id: users[1].id },
+	const mentorships = await prisma.mentorship.createManyAndReturn({
+		data: [
+			{
+				title: "Desarrollo Fullstack",
+				description: "Una mentoría para aprender desarrollo web fullstack.",
+				student_spots: 10,
+				mentor_spots: 2,
+				max_student_spots: 10,
+				max_mentor_spots: 2,
+				start_date: new Date("2023-10-01"),
+				end_date: new Date("2023-11-01"),
 			},
-			mentorship: {
-				connect: { id: mentorship_1.id },
+			{
+				title: "Análisis de Datos",
+				description: "Una mentoría sobre análisis de datos y visualización.",
+				student_spots: 5,
+				max_student_spots: 5,
+				start_date: new Date("2023-11-01"),
+				end_date: new Date("2023-12-01"),
 			},
-		},
+			{
+				title: "Introducción a la Inteligencia Artificial",
+				description:
+					"Mentoría sobre los conceptos básicos de IA y aprendizaje automático.",
+				student_spots: 6,
+				max_student_spots: 6,
+				start_date: new Date("2023-12-01"),
+				end_date: new Date("2023-12-20"),
+			},
+			{
+				title: "Desarrollo de Aplicaciones Móviles",
+				description:
+					"Una mentoría para aprender a desarrollar aplicaciones móviles.",
+				student_spots: 20,
+				mentor_spots: 3,
+				max_student_spots: 20,
+				max_mentor_spots: 3,
+				start_date: new Date("2023-12-15"),
+				end_date: new Date("2023-12-30"),
+			},
+		],
 	});
 
-	console.log(users_connect_mentorship);
+	console.log({ mentorships });
+
+	console.log("🚀 Asignando tags a las mentorias...");
+
+	for (const mentorship of mentorships) {
+		const updatedMentorship = await prisma.mentorship.update(
+			assignTags(mentorship.id),
+		);
+		console.log({ updatedMentorship });
+	}
+
+	console.log("🚀 Asignando mentores y egresados a  mentorias....\n");
+
+	const randomListUser = (users: User[], spots: number) => {
+		const shuffledUsers = users.sort(() => Math.random() - 0.5);
+
+		const randomCount = Math.min(
+			Math.floor(Math.random() * spots) + 1,
+			users.length,
+		);
+
+		return shuffledUsers.slice(0, randomCount).map((user) => ({ id: user.id }));
+	};
+
+	const connectUserMentorship = (idUser: string, idMentorship: number) => {
+		const query = {
+			data: {
+				user: {
+					connect: { id: idUser },
+				},
+				mentorship: {
+					connect: { id: idMentorship },
+				},
+			},
+		};
+		return query;
+	};
+	const usersMentor = users.filter((user) => user.roleId === role_mentor.id);
+	const usersEgresado = users.filter(
+		(user) => user.roleId === role_egresado.id,
+	);
+	// biome-ignore lint/style/useConst: <explanation>
+	let usersOnMentorship: UserOnMentorship[] = [];
+	for (const mentorship of mentorships) {
+		const randomMentors = randomListUser(usersMentor, mentorship.mentor_spots);
+		for (const mentor of randomMentors) {
+			const res = await prisma.userOnMentorship.create(
+				connectUserMentorship(mentor.id, mentorship.id),
+			);
+			usersOnMentorship.push(res);
+		}
+
+		const randomStudents = randomListUser(
+			usersEgresado,
+			mentorship.student_spots,
+		);
+		for (const student of randomStudents) {
+			const res = await prisma.userOnMentorship.create(
+				connectUserMentorship(student.id, mentorship.id),
+			);
+			usersOnMentorship.push(res);
+		}
+	}
+
+	console.log({ usersOnMentorship });
 }
 
 main()

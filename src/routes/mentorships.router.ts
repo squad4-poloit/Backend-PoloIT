@@ -6,14 +6,17 @@ import {
 	getMentorships,
 	postMentorship,
 	updateMentorship,
-} from "@src/controllers/mentorships.controller";
+	postUserToMentorship,
+} from "@controllers/mentorships.controller";
+import { rolesAuth, sessionAuth } from "@middlewares/session.middleware";
 
 const router = Router();
 
 router.get("/", getMentorships);
 router.get("/:id", getMentorship);
-router.post("/", postMentorship);
+router.post("/", sessionAuth, rolesAuth(["ADMIN", "GESTOR"]), postMentorship);
 router.delete("/:id", deleteMentorship);
-router.put("/:id", updateMentorship);
+router.patch("/:id", updateMentorship);
+router.post("/:id/users", postUserToMentorship);
 
 export { router };

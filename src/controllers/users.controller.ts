@@ -1,18 +1,31 @@
 import type { NextFunction, Request, Response } from "express";
-import UserService from "@src/services/users.service";
-import { GetUserSchema, GetUsersSchema } from "@src/schemas/users.schema";
+import UserService from "@services/users.service";
+import { GetUserSchema, GetUsersSchema } from "@schemas/users.schema";
+import MentorshipService from "@services/mentorships.service";
 
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { query } = GetUsersSchema.parse({
 			query: req.query,
 		});
-		const { limit, page, institution, role, skill } = query;
+		const {
+			limit,
+			page,
+			institution,
+			role,
+			skill,
+			id_insti,
+			id_role,
+			id_skill,
+		} = query;
 
 		const list_users = await UserService.paginatedListUsers(page, limit, {
 			role,
 			institution,
 			skill,
+			id_insti,
+			id_role,
+			id_skill,
 		});
 
 		const totalUsers = await UserService.getTotalUsers();
@@ -69,4 +82,20 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
-export { getUsers, getUser, updateUser, deleteUser };
+const getUserMentorships = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	const userId = req.params.id;
+	try {
+		const userMentorships =
+			await MentorshipService.getMentorshipsByUserId(userId);
+
+		res.status(200).json({ status: "200", data: { userMentorships } });
+	} catch (error) {
+		next(error);
+	}
+};
+
+export { getUsers, getUser, updateUser, deleteUser, getUserMentorships };
