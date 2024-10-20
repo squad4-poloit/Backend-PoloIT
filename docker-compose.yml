@@ -17,6 +17,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend_network
 
   backend_nodejs:
     build: .
@@ -28,6 +30,11 @@ services:
     depends_on: 
       db:
         condition: service_healthy
+    networks:
+      - backend_network
 
 volumes:
   db_data:
+networks:
+  backend_network:
+    driver: bridge
