@@ -12,7 +12,7 @@ RUN chmod +x /wait-for-it.sh
 COPY . .
 
 RUN npx prisma generate
-RUN /wait-for-it.sh db:5432 --timeout=60 --strict -- npx prisma migrate deploy
+RUN /wait-for-it.sh db_default:5432 --timeout=60 --strict -- npx prisma migrate deploy
 RUN npm run build
 
 FROM node:20.16
