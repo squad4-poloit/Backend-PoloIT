@@ -4,9 +4,9 @@ services:
     image: postgres:16-alpine
     restart: always
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=BackPoloIT
       - NODE_ENV=production
     ports:
       - 5432:5432
