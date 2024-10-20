@@ -15,6 +15,6 @@ FROM node:20.16
 
 WORKDIR /home/app
 
-COPY --from=builder /home/app ./
+COPY --from=builder /home/node/app ./
 
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
