@@ -21,3 +21,5 @@ FROM node:20.16
 WORKDIR /home/app
 
 COPY --from=builder  --chown=node:node /home/app ./
+
+CMD ["npm", "run", "start"]
