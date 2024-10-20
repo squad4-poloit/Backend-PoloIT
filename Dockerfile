@@ -4,11 +4,11 @@ WORKDIR /home/node/app
 
 COPY package*.json ./
 
+RUN npm ci
+
 COPY --chown=node:node . .
 
 USER node
-
-RUN npm ci
 
 RUN npx prisma generate
 
