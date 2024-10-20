@@ -1,16 +1,18 @@
 FROM node:20.16 AS builder
 
-WORKDIR /home/app
+WORKDIR /home/node/app
 
 COPY package*.json ./
 
-RUN npm ci
+COPY --chown=node:node . .
 
-COPY . .
+USER node
+
+RUN npm ci
 
 RUN npx prisma generate
 
-
+RUN npx prisma migrate deploy
 
 RUN npm run build
 
@@ -18,4 +20,4 @@ FROM node:20.16
 
 WORKDIR /home/app
 
-COPY --from=builder /home/app ./
+COPY --from=builder  --chown=node:node /home/app ./
