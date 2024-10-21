@@ -2,16 +2,17 @@ import swaggerJSDoc, {
 	type OAS3Definition,
 	type OAS3Options,
 } from "swagger-jsdoc";
+const PORT = process.env.PORT || 3000;
 
 const swaggerDefinition: OAS3Definition = {
 	openapi: "3.0.0",
 	info: {
-		title: "Api Documentacion",
+		title: "Api Documentación",
 		version: "1.0.0",
 	},
 	servers: [
 		{
-			url: "http://localhost:3030/api",
+			url: `http://localhost:${PORT}/api`,
 		},
 	],
 	components: {
