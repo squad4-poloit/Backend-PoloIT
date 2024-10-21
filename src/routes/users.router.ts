@@ -35,42 +35,36 @@ const router = Router();
  *         required: false
  *         schema:
  *           type: string
- *           example: "Universidad XYZ"
  *         description: Filtro por nombre de institución
  *       - name: role
  *         in: query
  *         required: false
  *         schema:
  *           type: string
- *           example: "Admin"
  *         description: Filtro por rol del usuario
  *       - name: skill
  *         in: query
  *         required: false
  *         schema:
  *           type: string
- *           example: "JavaScript"
  *         description: Filtro por habilidad del usuario
  *       - name: id_insti
  *         in: query
  *         required: false
  *         schema:
  *           type: integer
- *           example: 1
  *         description: Filtro por ID de la institución
  *       - name: id_role
  *         in: query
  *         required: false
  *         schema:
  *           type: integer
- *           example: 1
  *         description: Filtro por ID del rol
  *       - name: id_skill
  *         in: query
  *         required: false
  *         schema:
  *           type: integer
- *           example: 1
  *         description: Filtro por ID de la habilidad
  *     responses:
  *       200:
@@ -103,6 +97,35 @@ const router = Router();
  *         description: Error interno del servidor
  */
 router.get("/", getUsers);
+
+/**
+ * @swagger
+ * /users/{id}/mentorships:
+ *   get:
+ *     summary: Obtiene todas las mentorías de un usuario específico
+ *     tags: [User, Mentorship]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: ID del usuario
+ *           example: "c56a4180-65aa-42ec-a945-5fd21dec0538"
+ *     responses:
+ *       200:
+ *         description: Lista de mentorías del usuario obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Mentorship'
+ *       404:
+ *         description: Usuario no encontrado o sin mentorías
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get("/:id/mentorships", getUserMentorships);
 
 /**
