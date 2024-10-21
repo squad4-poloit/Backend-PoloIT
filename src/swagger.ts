@@ -220,6 +220,38 @@ const swaggerDefinition: OAS3Definition = {
 					},
 				},
 			},
+			Notification: {
+				type: "object",
+				properties: {
+					id: {
+						type: "integer",
+						description: "ID de la notificación",
+						example: 1,
+					},
+					message: {
+						type: "string",
+						description: "El mensaje de la notificación",
+						example: "Has sido invitado a una mentoría",
+					},
+					userId: {
+						type: "string",
+						description: "ID del usuario al que va dirigida la notificación",
+						example: "c56a4180-65aa-42ec-a945-5fd21dec0538",
+					},
+					read: {
+						type: "boolean",
+						description: "Indica si la notificación ha sido leída",
+						example: false,
+					},
+					createdAt: {
+						type: "string",
+						format: "date-time",
+						description: "Fecha de creación de la notificación",
+						example: "2024-10-10T14:48:00.000Z",
+					},
+				},
+				required: ["message", "userId"],
+			},
 		},
 	},
 };
