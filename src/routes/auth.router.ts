@@ -23,11 +23,11 @@ const router = Router();
  *               email:
  *                 type: string
  *                 description: Correo electrónico del usuario
- *                 example: "usuario@example.com"
+ *                 example: "usuario@gestor.com"
  *               password:
  *                 type: string
  *                 description: Contraseña del usuario
- *                 example: "ContraseñaSegura123!"
+ *                 example: "12345678"
  *               first_name:
  *                 type: string
  *                 description: Nombre del usuario
@@ -41,10 +41,15 @@ const router = Router();
  *                 format: date
  *                 description: Fecha de nacimiento del usuario
  *                 example: "1990-01-01"
- *               phone:
- *                 type: string
- *                 description: Número de teléfono del usuario
- *                 example: "+1234567890"
+ *               institutionId:
+ *                 type: integer
+ *                 description: id de la institución
+ *                 example: "2"
+ *               roleId:
+ *                 type: integer
+ *                 description: ID del rol
+ *                 example: "2"
+ *
  *     responses:
  *       201:
  *         description: Usuario registrado exitosamente
@@ -71,11 +76,11 @@ router.post("/register", postRegister);
  *               email:
  *                 type: string
  *                 description: Correo electrónico del usuario
- *                 example: "usuario@example.com"
+ *                 example: "usuario@gestor.com"
  *               password:
  *                 type: string
  *                 description: Contraseña del usuario
- *                 example: "ContraseñaSegura123!"
+ *                 example: "12345678"
  *     responses:
  *       200:
  *         description: Inicio de sesión exitoso

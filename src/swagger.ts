@@ -29,7 +29,7 @@ const swaggerDefinition: OAS3Definition = {
 					id: {
 						type: "string",
 						description: "ID único del usuario (UUID).",
-						example: "c56a4180-65aa-42ec-a945-5fd21dec0538",
+						example: "104d24f6-ed9f-44b6-a147-fe002d5f3e73",
 					},
 					dni: {
 						type: "string",
@@ -107,8 +107,8 @@ const swaggerDefinition: OAS3Definition = {
 					name: {
 						type: "string",
 						description:
-							"Nombre del rol (e.g., Admin, Gestor, Estudiante, Mentor).",
-						example: "Admin",
+							"Nombre del rol (e.g., ADMIN, GESTOR, MENTOR, EGRESADO).",
+						example: "GESTOR",
 					},
 				},
 			},
@@ -133,30 +133,30 @@ const swaggerDefinition: OAS3Definition = {
 					},
 					student_spots: {
 						type: "integer",
-						description: "Número de plazas disponibles para estudiantes.",
+						description: "Número de cupos disponibles para estudiantes.",
 						example: 5,
+					},
+					mentor_spots: {
+						type: "integer",
+						description: "Número de cupos disponibles para mentor.",
+						example: 1,
 					},
 					status: {
 						type: "string",
 						description: "Estado de la mentoría.",
-						example: "active",
-					},
-					tags: {
-						type: "string",
-						description: "Etiquetas asociadas a la mentoría.",
-						example: "JavaScript, Web Development",
+						example: "PENDIENTE",
 					},
 					start_date: {
 						type: "string",
-						format: "date-time",
+						format: "date",
 						description: "Fecha de inicio de la mentoría.",
-						example: "2024-01-01T00:00:00Z",
+						example: "2024-01-01",
 					},
 					end_date: {
 						type: "string",
-						format: "date-time",
+						format: "date",
 						description: "Fecha de finalización de la mentoría.",
-						example: "2024-03-01T00:00:00Z",
+						example: "2024-03-01",
 					},
 				},
 			},
@@ -246,12 +246,11 @@ const swaggerDefinition: OAS3Definition = {
 					},
 					createdAt: {
 						type: "string",
-						format: "date-time",
+						format: "date",
 						description: "Fecha de creación de la notificación",
-						example: "2024-10-10T14:48:00.000Z",
+						example: "2024-10-10",
 					},
 				},
-				required: ["message", "userId"],
 			},
 		},
 	},

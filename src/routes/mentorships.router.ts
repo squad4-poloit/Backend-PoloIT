@@ -171,10 +171,10 @@ router.patch("/:id", updateMentorship);
  *           schema:
  *             type: object
  *             properties:
- *               userId:
+ *               user_id:
  *                 type: string
  *                 description: ID del usuario a añadir
- *                 example: "c56a4180-65aa-42ec-a945-5fd21dec0538"
+ *                 example: "104d24f6-ed9f-44b6-a147-fe002d5f3e73"
  *     responses:
  *       200:
  *         description: Usuario añadido a la mentoría exitosamente

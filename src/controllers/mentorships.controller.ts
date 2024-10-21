@@ -14,7 +14,11 @@ const getMentorships = async (
 ) => {
 	try {
 		const allMentorships = await MentorshipService.getListMentorships();
-		res.status(200).json({ status: "200", data: allMentorships });
+		res.status(200).json({
+			status: "200",
+			message: "Se obtuvo el listado de mentorias con exito",
+			data: allMentorships,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -34,7 +38,11 @@ const getMentorship = async (
 			start_date: formatDateToString(start_date),
 			end_date: formatDateToString(end_date),
 		};
-		res.status(200).json({ status: "200", data: sendMentorship });
+		res.status(200).json({
+			status: "200",
+			message: "Se obtuvieron los datos de la mentoria con exito",
+			data: sendMentorship,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -57,7 +65,11 @@ const postMentorship = async (
 			end_date: formatDateToString(end_date),
 		};
 
-		res.status(200).json({ status: "200", data: sendMentorship });
+		res.status(200).json({
+			status: "200",
+			message: "La mentoria se creo con exito",
+			data: sendMentorship,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -82,7 +94,11 @@ const updateMentorship = async (
 			end_date: formatDateToString(end_date),
 		};
 
-		res.status(200).json({ status: "200", data: sendMentorship });
+		res.status(200).json({
+			status: "200",
+			message: "La mentoria se actualizo con exito",
+			data: sendMentorship,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -96,7 +112,11 @@ const deleteMentorship = async (
 		const mentorship_id = Number(req.params.id);
 		const deletedMentorship = MentorshipService.deleteMentorship(mentorship_id);
 
-		res.status(200).json({ status: "200", data: deletedMentorship });
+		res.status(200).json({
+			status: "200",
+			message: "La mentoria se elimino con exito",
+			data: deletedMentorship,
+		});
 	} catch (error) {
 		next(error);
 	}

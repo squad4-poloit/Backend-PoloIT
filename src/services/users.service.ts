@@ -106,23 +106,24 @@ const paginatedListUsers = async (
 };
 
 const getUser = async (id: string) => {
-	const checkUser = await isUserExist(id);
-	if (!checkUser) {
-		throw errors.not_found.withDetails("Usuario no encontrado");
-	}
-
 	const user = await prisma.user.findUnique({
 		where: {
 			id,
 		},
 		select: selectUser,
 	});
+	if (!user) {
+		throw errors.not_found.withDetails("Usuario no encontrado");
+	}
 	return user;
 };
 
 const updateUser = async (id: string, fieldsUpdated: Partial<User>) => {
-	const okUser = await isUserExist(id);
-	if (!okUser) {
+	const user = await prisma.user.findUnique({
+		where: { id },
+		select: { id: true },
+	});
+	if (!user) {
 		throw errors.not_found.withDetails("El id del usuario no existe");
 	}
 
@@ -135,8 +136,11 @@ const updateUser = async (id: string, fieldsUpdated: Partial<User>) => {
 
 // Eliminación de un usuario
 const deleteUser = async (id: string) => {
-	const okUser = await isUserExist(id);
-	if (!okUser) {
+	const user = await prisma.user.findUnique({
+		where: { id },
+		select: { id: true },
+	});
+	if (!user) {
 		throw errors.not_found.withDetails("El id del usuario no existe");
 	}
 
