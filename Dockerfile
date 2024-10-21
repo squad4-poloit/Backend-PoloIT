@@ -9,14 +9,7 @@ RUN npm ci
 COPY . .
 
 RUN npx prisma generate
+
 RUN npm run build
-
-FROM node:20.16
-
-WORKDIR /home/app
-
-COPY --from=builder /home/node/app ./
-COPY --from=builder /home/node/app/node_modules ./node_modules
-
 
 CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && npm run start"]
