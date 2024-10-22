@@ -6,20 +6,31 @@ Este es el backend un sistema de gestión de inscripciones a Mentorias, desarrol
 
 Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas.
 
+## Clonar repositorio
+
+```bash
+git clone https://github.com/squad4-poloit/Backend-PoloIT.git
+```
+
+## Instalación con Docker
+
+Importante tener Docker instalado
+
+### Ejecutar docker compose
+
+```bash
+docker compose up -d
+```
+
+## Instalación local
+
 ### Pre-requisitos 📋
 
 - [Git](https://git-scm.com/)
 - [Node.js LTS](https://nodejs.org/en)
 - [PostgresSQL 16.4](https://www.postgresql.org/download/)
-  - [Windows](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
 
 ### Instalación 🔧
-
-#### 1. Clonar repositorio
-
-```bash
-git clone https://github.com/squad4-poloit/Backend-PoloIT.git
-```
 
 #### 2.  Instalar dependencias
 
@@ -28,49 +39,38 @@ cd Backend-PoloIT
 npm install
 ```
 
-#### 4. Preparar Variables de entorno
+#### 3. Preparar Variables de entorno en .env
 
-- Los script npm están preparados para cargar las variables de entorno definidas en archivos `.env` para cada ambiente
-  - `.env` -> NODE_ENV=production
-  - `.env.dev` -> NODE_ENV=development
-  - `.env.local` -> NODE_ENV=development
-  - `.env.test` -> NODE_ENV=test
-
-- Crear y definir variables de entorno
-  - DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
-  - DATABASE_LOCAL="file:./local.db"
-  - PORT=3030
-  - NODE_ENV=development
-
-#### 4.  Iniciar Base de Datos
-
-```bash
-npm run prisma-migrate:<ambiente>
+```.env
+DATABASE_URL="postgresql://postgres:admin@localhost:5432/BackPoloIT?schema=public"
+PORT=3000
+NODE_ENV=production
 ```
 
-Reemplazar `<ambiente>` por:
+Importante en PostgreSQL se debe tener usuario: postgres , contraseña: admin y una base de datos: BackPoloIT
+También puede reemplazar los valores que en la url para que correspondan a su configuración.
 
-- `production` para ejecuta
-- `development`
-- `local`
-- `test`
-
-#### 5. Ejecutar Proyecto
+#### 4. Iniciar el backend
 
 ```bash
-npm run local
+npx prisma generate
 ```
-
-## Ejecutando las pruebas ⚙️
 
 ```bash
-npm run test:local
+npm build
 ```
 
-## Despliegue 📦
+```bash
+npx prisma migrate deploy
+```
 
-`In Progress`
-hook
+```bash
+npx prisma migrate db seed
+```
+
+```bash
+npm run start
+```
 
 ## Construido con 🛠️
 
@@ -85,21 +85,3 @@ hook
 - [Jest](https://jestjs.io/) - Testing Framework
 - [Docker](https://www.docker.com/) - Container tool
 - [Jenkins](https://www.jenkins.io/) - Servidor de automatización
-
-## Estructura  de carpetas 🧱
-
-`In Progress`
-
-## Versionado 📌
-
-`In Progress`
-
-## Tareas
-
-- [x] Implementar multiples entornos [prod, dev, dev:local, test]
-- [ ] Documentar en el Readme como ejecutar el proyecto
-- [ ] Configurar Typescript Path Aliases
-- [ ] Documentar la estructura del proyecto
-- [ ] Documentar Apis con Swagger
-- [ ] Implementar validaciones en controladores con Zod
-- [ ] Crear un diagrama de la base de datos
