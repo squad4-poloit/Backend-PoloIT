@@ -13,8 +13,9 @@ const swaggerDefinition: OAS3Definition = {
 	servers: [
 		{
 			url: "https://backend.squad4-poloit.xyz",
+		},
+		{
 			url: `http://localhost:${PORT}/api`,
-   
 		},
 	],
 	components: {
