@@ -29,7 +29,7 @@ git clone https://github.com/squad4-poloit/Backend-PoloIT.git
 
 ### Instalación con Docker
 
-Asegúrate de tener Docker instalado. Luego, ejecuta los siguientes comandos para levantar el entorno de desarrollo:
+Asegúrate de tener Docker instalado. Luego, ejecuta los siguientes comandos para levantar el entorno de producción:
 
 ```bash
 docker compose up -d
