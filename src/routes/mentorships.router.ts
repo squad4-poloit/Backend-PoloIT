@@ -7,6 +7,7 @@ import {
 	postMentorship,
 	updateMentorship,
 	postUserToMentorship,
+	getMentorshipUsers,
 } from "@controllers/mentorships.controller";
 import { rolesAuth, sessionAuth } from "@middlewares/session.middleware";
 
@@ -59,6 +60,37 @@ router.get("/", getMentorships);
  *         description: Error interno del servidor
  */
 router.get("/:id", getMentorship);
+
+/**
+ * @swagger
+ * /mentorships/{id}/users:
+ *   get:
+ *     summary: Obtiene los usuarios inscritos en una mentoría específica
+ *     description: Devuelve una lista de usuarios que están inscritos en la mentoría identificada por su ID.
+ *     tags: [Mentorship]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID de la mentoría
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios inscritos en la mentoría
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Mentoría no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/:id/users", getMentorshipUsers);
+router.get("/:id/users", getMentorshipUsers);
 
 /**
  * @swagger

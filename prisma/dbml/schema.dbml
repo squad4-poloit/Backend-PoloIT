@@ -115,8 +115,8 @@ Ref: User.roleId > Role.id
 
 Ref: User.institutionId > Institution.id
 
-Ref: UserOnMentorship.userId > User.id
+Ref: UserOnMentorship.userId > User.id [delete: Cascade]
 
-Ref: UserOnMentorship.mentorshipId > Mentorship.id
+Ref: UserOnMentorship.mentorshipId > Mentorship.id [delete: Cascade]
 
 Ref: Notification.userId > User.id

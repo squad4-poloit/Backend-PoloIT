@@ -150,6 +150,42 @@ const deleteUser = async (id: string) => {
 	return deletedUser;
 };
 
+const getUsersByMentorshipId = async (mentorshipId: number) => {
+	const mentorship = await prisma.mentorship.findUnique({
+		where: {
+			id: mentorshipId,
+		},
+		include: {
+			users: true,
+		},
+	});
+	if (!mentorship) {
+		throw errors.not_found.withDetails(
+			"No se encontró la mentoria con el ID proporcionado.",
+		);
+	}
+
+	const mentorshipHasUsers = mentorship.users.some(
+		(user) => user.mentorshipId === mentorshipId,
+	);
+	if (!mentorshipHasUsers) {
+		throw errors.not_found.withDetails(
+			"No se encontraron usuarios en la mentoria",
+		);
+	}
+
+	const usersOnMentorship = await prisma.userOnMentorship.findMany({
+		where: { mentorshipId },
+		select: {
+			user: {
+				select: selectUser,
+			},
+		},
+	});
+
+	return usersOnMentorship;
+};
+
 export default {
 	paginatedListUsers,
 	getUser,
@@ -157,4 +193,5 @@ export default {
 	deleteUser,
 	getTotalUsers,
 	getRoleUser,
+	getUsersByMentorshipId,
 };

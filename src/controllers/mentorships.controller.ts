@@ -6,6 +6,7 @@ import {
 } from "@schemas/mentorship.schema";
 import { formatDateToString } from "@utils/date";
 import type { RequestJWT } from "@interfaces/auth.interface";
+import UserService from "@services/users.service";
 
 const getMentorships = async (
 	_req: Request,
@@ -156,6 +157,27 @@ const postUserToMentorship = async (
 	}
 };
 
+const getMentorshipUsers = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const mentorshipId = Number(req.params.id);
+
+		const mentorshipUsers =
+			await UserService.getUsersByMentorshipId(mentorshipId);
+
+		res.status(200).json({
+			status: "200",
+			message: "Se obtuvieron los usuarios de la mentoria con exito",
+			data: { mentorshipUsers },
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
 export {
 	getMentorships,
 	getMentorship,
@@ -163,4 +185,5 @@ export {
 	updateMentorship,
 	deleteMentorship,
 	postUserToMentorship,
+	getMentorshipUsers,
 };

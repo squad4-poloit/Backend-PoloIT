@@ -79,8 +79,8 @@ model UserOnMentorship {
   assign_at    DateTime @default(now())
   update_at    DateTime @updatedAt
 
-  user       User       @relation(fields: [userId], references: [id])
-  mentorship Mentorship @relation(fields: [mentorshipId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mentorship Mentorship @relation(fields: [mentorshipId], references: [id], onDelete: Cascade)
 
   @@unique([userId, mentorshipId])
 }
