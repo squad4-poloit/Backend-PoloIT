@@ -188,6 +188,19 @@ async function main() {
 
 	const users = await prisma.user.createManyAndReturn({
 		data: [
+			{
+				dni: "12345678",
+				email: "usuario@gestor.com",
+				first_name: "Juan",
+				last_name: "Pérez",
+				password:
+					"$2a$08$IlWG5RbOTkCDACGJ6jOYsufvW/sLk0rTysjVrgWXjXzHpRpZwwohy",
+				birth_date: new Date("1990-01-01"),
+				phone: "+54123456789",
+				linkedIn: "https://www.linkedin.com/in/carlosfernandez",
+				roleId: role_gestor.id,
+				institutionId: inst_poloit.id,
+			},
 			// Admin
 			{
 				dni: "12345678A",
